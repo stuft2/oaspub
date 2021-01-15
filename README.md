@@ -1,5 +1,5 @@
 # oasm
-OpenAPI Specification Manager
+[OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification/) Manager
 
 ### Problem
 Developers lack the ability to easily store and recall a specific version of a JSON schema within an OAS document. Oftentimes, the version field found in the [Info Object](https://swagger.io/specification/#info-object) goes ignored and unchanged. Another related problem is that [Reference Objects](https://swagger.io/specification/#reference-object) are underused. OAS is perfect for complex REST API systems in enterprise scenarios but the missing link that would make it even more widely used is version management and recall of the JSON schemas found in an OAS document.
