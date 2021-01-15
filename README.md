@@ -16,3 +16,7 @@ No contributions to this project will be allowed until after the v1 milestone.
 
 ### Future Considerations
 I'm considering building a NodeJS client and CLI interface to facilitate the use of this product in CI/CD environments. However, this enhancement will likely fall outside of the v1 deadline (if at all).
+
+
+## Appendix
+[Domain Driven Design Document](docs/ddd.md)
