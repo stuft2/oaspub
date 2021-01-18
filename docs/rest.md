@@ -55,3 +55,17 @@ for more details).
 | GET    | `/documents/:documentId/maintainers`               | list maintainers              |
 | PUT    | `/documents/:documentId/maintainers/:maintainerId` | acknowledge maintainer invite |
 | DELETE | `/documents/:documentId/maintainers/:maintainerId` | remove maintainer             |
+
+## Additional Reference
+
+Idempotent operations are those that can be called more than once with
+the same inputs without having any additional side effects beyond what
+happened with the first call.
+
+| HTTP Method | Meaning / Usage                                                 | Idempotent | Body |
+|:------------|:----------------------------------------------------------------|:-----------|:-----|
+| GET         | Retrieve the resource or resource collection.                   | Yes        | No   |
+| POST        | Create a new resource or resource collection.                   | No         | Yes  |
+| PUT         | Put a resource or resource collection into the specified state. | Yes        | Yes  |
+| DELETE      | Delete a resource or resource collection.                       | Yes        | No   |
+
