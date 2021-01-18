@@ -8,7 +8,7 @@ Developers lack the ability to easily store and recall a specific version of a J
 Fulfill the need for semantic versioning of OAS documents and rapid recall of specific versions of a JSON schema found in an OAS document.
 
 ### Packages
-1. A backend API that validates and manages OAS documents and provides historical lookup of schemas.
+1. A backend API that validates and manages OAS documents and provides a historical lookup of schemas.
 2. A frontend portal for discovering and visualizing OAS documents and their change history.
 
 ### Contributions
@@ -19,4 +19,4 @@ I'm considering building a NodeJS client and CLI interface to facilitate the use
 
 
 ## Appendix
-[Domain Driven Design Document](docs/ddd.md)
+[Domain Driven Design Document](packages/api/docs/ddd.md)
