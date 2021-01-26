@@ -41,5 +41,5 @@ will likely fall outside of the v1 deadline (if at all).
 
 ## Appendix
 
-[Domain Driven Design Document](packages/api/docs/ddd.md)
-[REST API Design Document](packages/api/docs/rest.md)
+1. [Domain Driven Design Document](packages/api/docs/ddd.md)
+2. [REST API Design Document](packages/api/docs/rest.md)
