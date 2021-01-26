@@ -18,9 +18,6 @@ for more details).
 | Method | Path         | Description    |
 |:-------|:-------------|:---------------|
 | POST   | `/sessions`  | login          |
-| POST   | `/passwords` | reset password |
-
-:grey_question: How to accomplish RESTful password reset?
 
 ### Access Tokens
 

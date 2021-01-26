@@ -105,18 +105,22 @@ document.
 - download document chunk
 - get document dependencies
 
-### Document Settings
+### Document Attributes
 
 Considered an **entity** because it may be accessed by the name of the
 document and all other fields are modifiable.
 
 ##### Properties
 
-| Property      | Type    | Description                                                                             |
-|:--------------|:--------|:----------------------------------------------------------------------------------------|
-| documentTitle | string  | A reference to the document.info.title property.                                        |
-| public        | boolean | Determines the visibility of the document (public = 1, private = 0).                    |
-| mockEnabled   | boolean | Allows the web server to return mock responses according to the document specification. |
+| Property      | Type                                           | Description                                      |
+|:--------------|:-----------------------------------------------|:-------------------------------------------------|
+| documentTitle | string                                         | A reference to the document.info.title property. |
+| name          | string                                         | The name of the attribute.                       |
+| description   | string                                         | A description to give the attribute.             |
+| value         | string or number or boolean or integer or null | The value of the description.                    |
+
+This table should include settings like whether the API is public or if
+mock testing is enabled.
 
 ##### Events
 
