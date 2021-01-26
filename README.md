@@ -1,4 +1,4 @@
-<img align="right" src=media/logo.png height="150px">
+<img align="right" src=media/logo-inverted.png height="150px">
 
 # [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification/) Manager
 
