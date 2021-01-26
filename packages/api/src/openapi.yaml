@@ -1,0 +1,250 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: OpenAPI Specification Manager
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.txt
+  description: An OpenAPI Specification Manager for discovering and versioning OpenAPI
+    documents across an organization.
+  contact:
+    name: Spencer Tuft
+    email: spencer.tuft@gmail.com
+paths:
+  "/accounts":
+    post:
+      summary: create an account
+      responses: {}
+      operationId: post-accounts
+      tags:
+        - Accounts
+      description: create an account
+  "/accounts/:accountId":
+    get:
+      summary: get account information
+      tags:
+        - Accounts
+      responses: {}
+      operationId: get-accounts-:accountId
+      description: get account information
+    put:
+      summary: update account information
+      tags:
+        - Accounts
+      responses: {}
+      operationId: put-accounts-:accountId
+      description: update account information
+    delete:
+      summary: deactivate account
+      tags:
+        - Accounts
+      responses: {}
+      operationId: delete-accounts-:accountId
+      description: deactivate account
+  "/session":
+    post:
+      summary: login
+      tags:
+        - Auth
+      responses: {}
+      operationId: post-session
+      description: login
+  "/passwords":
+    post:
+      summary: reset password
+      tags:
+        - Auth
+      responses: {}
+      operationId: post-passwords
+      description: reset password
+  "/accounts/:accountId/tokens":
+    get:
+      summary: list access tokens
+      tags:
+        - Accounts
+      responses: {}
+      operationId: get-accounts-:accountId-tokens
+      description: list access tokens
+    post:
+      summary: generate access token
+      tags:
+        - Accounts
+      responses: {}
+      operationId: post-accounts-:accountId-tokens
+      description: generate access token
+  "/accounts/:accountId/tokens/:tokenId":
+    delete:
+      summary: revoke access token
+      tags:
+        - Accounts
+      responses: {}
+      operationId: delete-accounts-:accountId-tokens-:tokenId
+      description: revoke access token
+  "/documents":
+    get:
+      summary: list documents
+      tags:
+        - Documents
+      responses: {}
+      operationId: get-documents
+      description: list documents
+    post:
+      summary: create new document
+      tags:
+        - Documents
+      responses: {}
+      operationId: post-documents
+  "/documents/:documentId/versions":
+    get:
+      summary: list document history
+      tags:
+        - Documents
+      responses: {}
+      operationId: get-documents-:documentId-versions
+      description: list document history
+    post:
+      summary: create new version
+      tags:
+        - Documents
+      responses: {}
+      operationId: post-documents-:documentId-versions
+  "/documents/:documentId/versions/:version":
+    get:
+      summary: get document
+      tags:
+        - Documents
+      responses: {}
+      operationId: get-documents-:documentId-versions-:version
+      description: get document
+  "/documents/:documentId/versions/:version/dependencies":
+    get:
+      summary: list dependencies
+      responses: {}
+      operationId: get-documents-:documentId-versions-:version-dependencies
+      tags:
+        - Documents
+      description: list dependencies
+  "/documents/:documentId/attributes":
+    put:
+      summary: update document settings
+      tags:
+        - Documents
+      responses: {}
+      operationId: put-documents-:documentId-attributes
+    get:
+      summary: get document settings
+      responses: {}
+      operationId: get-documents-:documentId-attributes
+      tags:
+        - Documents
+      description: get document settings
+  "/documents/:documentId/maintainers":
+    get:
+      summary: list maintainers
+      responses: {}
+      operationId: get-documents-:documentId-maintainers
+      tags:
+        - Documents
+      description: list maintainers
+    post:
+      summary: invite maintainer
+      tags:
+        - Documents
+      responses: {}
+      operationId: post-documents-:documentId-maintainers
+  "/document/:documentId/maintainers/:maintainerId":
+    put:
+      summary: acknowledge maintainer invite
+      responses: {}
+      operationId: put-document-:documentId-maintainers-:maintainerId
+      tags:
+        - Documents
+      description: acknowledge maintainer invite
+    delete:
+      summary: remove maintainer
+      tags:
+        - Documents
+      responses: {}
+      operationId: delete-document-:documentId-maintainers-:maintainerId
+      description: remove maintainer
+tags:
+  - name: Accounts
+  - name: Documents
+  - name: Auth
+components:
+  schemas:
+    Account:
+      title: Account
+      type: object
+      x-tags:
+        - Accounts
+        - Auth
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        surname:
+          type: string
+        givenName:
+          type: string
+    Access-Token:
+      title: Access-Token
+      type: object
+      x-tags:
+        - Auth
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        token:
+          type: string
+        lastUsed:
+          type: object
+          properties:
+            location:
+              type: string
+            datetime:
+              type: string
+              format: date-time
+      x-examples: {}
+    Document:
+      $ref: https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/schemas/v3.0/schema.json
+    Document-Attributes:
+      title: Document-Attributes
+      type: object
+      x-tags:
+        - Documents
+      properties:
+        documentTitle:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        value:
+          oneOf:
+            - type: string
+            - type: number
+            - type: boolean
+            - type: integer
+            - type: 'null'
+    Document-Maintainer:
+      title: Document-Maintainer
+      type: object
+      x-tags:
+        - Documents
+      properties:
+        documentTitle:
+          type: string
+        maintainerId:
+          type: string
+        role:
+          type: string
+          enum:
+            - admin
+            - write
+            - read
