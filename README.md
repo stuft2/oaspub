@@ -1,5 +1,12 @@
-<div style="margin:0 auto; display: block; width:500px">
-  <img src="README.md" alt="OASM Logo" width="500px" height="100%" />
+<div align="center">
+	<br>
+	<div>
+		<img width="600" height="600" src="media/logo.png" alt="oasm">
+	</div>
+	<br>
+	<br>
+	<br>
+	<br>
 </div>
 
 # [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification/) Manager
