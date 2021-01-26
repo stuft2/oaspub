@@ -1,7 +1,7 @@
 <div align="center">
 	<br>
 	<div>
-		<img width="600" height="600" src="media/logo.png" alt="oasm">
+		<img width="600" src="media/logo.png" alt="oasm">
 	</div>
 	<br>
 	<br>
