@@ -3,8 +3,8 @@ info:
   version: 1.0.0
   title: OpenAPI Specification Manager
   license:
-    name: Apache-2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0.txt
+    name: 'Apache-2.0'
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.txt'
   description: An OpenAPI Specification Manager for discovering and versioning OpenAPI
     documents across an organization.
   contact:
@@ -14,166 +14,533 @@ paths:
   "/accounts":
     post:
       summary: create an account
-      responses: {}
-      operationId: post-accounts
+      description: create an account
+      operationId: createAccount
       tags:
         - Accounts
-      description: create an account
+      responses:
+        201:
+          description: created a resource
+          headers:
+            location:
+              description: the location of the resource
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/simple_metadata'
+                  - $ref: '#/components/schemas/account'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
   "/accounts/:accountId":
     get:
       summary: get account information
+      description: get account information
+      operationId: getAccountInfo
       tags:
         - Accounts
-      responses: {}
-      operationId: get-accounts-:accountId
-      description: get account information
+      responses:
+        200:
+          description: returns account information
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/simple_metadata'
+                  - $ref: '#/components/schemas/account'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
     put:
       summary: update account information
+      description: update account information
+      operationId: updateAccountInfo
       tags:
         - Accounts
-      responses: {}
-      operationId: put-accounts-:accountId
-      description: update account information
+      responses:
+        200:
+          description: returns the updated account information
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/simple_metadata'
+                  - $ref: '#/components/schemas/account'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
     delete:
       summary: deactivate account
+      description: deactivate account
+      operationId: deactivateAccount
       tags:
         - Accounts
-      responses: {}
-      operationId: delete-accounts-:accountId
-      description: deactivate account
+      responses:
+        204:
+          $ref: '#/components/responses/204'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
   "/session":
     post:
       summary: login
-      tags:
-        - Auth
-      responses: {}
-      operationId: post-session
       description: login
-  "/passwords":
-    post:
-      summary: reset password
+      operationId: login
       tags:
         - Auth
-      responses: {}
-      operationId: post-passwords
-      description: reset password
+      responses:
+        201:
+          description: returns the authentication information
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/simple_metadata'
+                  - $ref: '#/components/schemas/session'
+        400:
+          $ref: '#/components/responses/400'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
   "/accounts/:accountId/tokens":
     get:
       summary: list access tokens
+      description: list access tokens
+      operationId: listAccessTokens
       tags:
         - Accounts
-      responses: {}
-      operationId: get-accounts-:accountId-tokens
-      description: list access tokens
+      responses:
+        200:
+          description: returns the list of access tokens generated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/collection_metadata'
+                  - type: object
+                    properties:
+                      values:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/token'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
     post:
       summary: generate access token
+      description: generate access token
+      operationId: generateAccessTokens
       tags:
         - Accounts
-      responses: {}
-      operationId: post-accounts-:accountId-tokens
-      description: generate access token
+      responses:
+        201:
+          description: returns the generated access token
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/collection_metadata'
+                  - $ref: '#/components/schemas/token'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
   "/accounts/:accountId/tokens/:tokenId":
     delete:
       summary: revoke access token
+      description: revoke access token
+      operationId: revokeAccessToken
       tags:
         - Accounts
-      responses: {}
-      operationId: delete-accounts-:accountId-tokens-:tokenId
-      description: revoke access token
+      responses:
+        204:
+          $ref: '#/components/responses/204'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
   "/documents":
     get:
       summary: list documents
+      description: list documents
+      operationId: listDocumentInfo
       tags:
         - Documents
-      responses: {}
-      operationId: get-documents
-      description: list documents
+      responses:
+        200:
+          description: returns a list of documents
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/collection_metadata'
+                  - type: object
+                    properties:
+                      values:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/document_info'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
     post:
       summary: create new document
+      description: create a new document
+      operationId: createDocument
       tags:
         - Documents
-      responses: {}
-      operationId: post-documents
+      responses:
+        201:
+          description: create a new document
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
   "/documents/:documentId/versions":
     get:
       summary: list document history
+      description: list document history
+      operationId: listDocumentHistory
       tags:
         - Documents
-      responses: {}
-      operationId: get-documents-:documentId-versions
-      description: list document history
+      responses:
+        200:
+          description: returns a list of documents
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/collection_metadata'
+                  - type: object
+                    properties:
+                      values:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/document_info'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
     post:
       summary: create new version
+      operationId: publishDocumentVersion
       tags:
         - Documents
-      responses: {}
-      operationId: post-documents-:documentId-versions
+      responses:
+        201:
+          description: returns the new version
+          headers:
+            location:
+              description: the location of the resource
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/simple_metadata'
+                  - $ref: '#/components/schemas/document'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
   "/documents/:documentId/versions/:version":
     get:
       summary: get document
+      description: get document
+      operationId: getDocument
       tags:
         - Documents
-      responses: {}
-      operationId: get-documents-:documentId-versions-:version
-      description: get document
+      responses:
+        200:
+          description: returns the document
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/simple_metadata'
+                  - $ref: '#/components/schemas/document'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
   "/documents/:documentId/versions/:version/dependencies":
     get:
       summary: list dependencies
-      responses: {}
-      operationId: get-documents-:documentId-versions-:version-dependencies
-      tags:
-        - Documents
       description: list dependencies
-  "/documents/:documentId/attributes":
-    put:
-      summary: update document settings
+      operationId: listDependencies
       tags:
         - Documents
-      responses: {}
-      operationId: put-documents-:documentId-attributes
+      responses:
+        200:
+          description: returns a list of documents that depend on this documents
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/collection_metadata'
+                  - type: object
+                    properties:
+                      values:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/document_info'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+  "/documents/:documentId/attributes":
     get:
       summary: get document settings
-      responses: {}
+      description: get document settings
       operationId: get-documents-:documentId-attributes
       tags:
         - Documents
-      description: get document settings
+      responses:
+        200:
+          description: returns the updated document settings
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/collection_metadata'
+                  - type: object
+                    properties:
+                      values:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/attribute'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+  "/documents/:documentId/attributes/:name":
+    put:
+      summary: update document settings
+      operationId: updateDocumentAttribute
+      tags:
+        - Documents
+      responses:
+        200:
+          description: returns the updated document settings
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/collection_metadata'
+                  - $ref: '#/components/schemas/attribute'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
   "/documents/:documentId/maintainers":
     get:
       summary: list maintainers
-      responses: {}
-      operationId: get-documents-:documentId-maintainers
+      description: list maintainers
+      operationId: listDocumentMaintainers
       tags:
         - Documents
-      description: list maintainers
+      responses:
+        200:
+          description: returns a list of maintainers for a document
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/collection_metadata'
+                  - type: object
+                    properties:
+                      values:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/maintainer'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
     post:
       summary: invite maintainer
+      operationId: sendMaintainerInvite
       tags:
         - Documents
-      responses: {}
-      operationId: post-documents-:documentId-maintainers
+      responses:
+        202:
+          description: Sends an invite to a user to be a document maintainer
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
   "/document/:documentId/maintainers/:maintainerId":
     put:
       summary: acknowledge maintainer invite
-      responses: {}
-      operationId: put-document-:documentId-maintainers-:maintainerId
+      description: acknowledge maintainer invite
+      operationId: acknowledgeMaintainerInvite
       tags:
         - Documents
-      description: acknowledge maintainer invite
+      responses:
+        200:
+          description: updates the maintainer invite
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/simple_metadata'
+                  - $ref: '#/components/schemas/maintainer'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
     delete:
       summary: remove maintainer
+      description: remove maintainer
+      operationId: removeDocumentMaintainer
       tags:
         - Documents
-      responses: {}
-      operationId: delete-document-:documentId-maintainers-:maintainerId
-      description: remove maintainer
-tags:
-  - name: Accounts
-  - name: Documents
-  - name: Auth
+      responses:
+        204:
+          $ref: '#/components/responses/204'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
 components:
   schemas:
-    Account:
+    collection_metadata:
+      title: Collection Metadata
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/simple_metadata'
+        - type: object
+          properties:
+            collection_size:
+              type: number
+            limit:
+              type: number
+            offset:
+              type: number
+    simple_metadata:
+      title: Simple Metadata
+      type: object
+      properties:
+        metadata:
+          type: object
+          properties:
+            validation_response:
+              $ref: '#/components/schemas/validation_response'
+            validation_information:
+              type: array
+              items:
+                type: string
+    validation_response:
+      title: Validation Response
+      type: object
+      properties:
+        code:
+          type: number
+          readOnly: true
+        message:
+          type: string
+          readOnly: true
+    session:
+      title: Session
+      type: object
+      properties:
+        jwt:
+          type: string
+          readOnly: true
+    account:
       title: Account
       type: object
       x-tags:
@@ -182,45 +549,49 @@ components:
       properties:
         id:
           type: string
+          readOnly: true
         email:
           type: string
         password:
           type: string
+          writeOnly: true
         surname:
           type: string
         givenName:
           type: string
-    Access-Token:
-      title: Access-Token
+    token:
+      title: Token
       type: object
       x-tags:
         - Auth
       properties:
         id:
           type: string
+          readOnly: true
         description:
           type: string
         token:
           type: string
+          readOnly: true
         lastUsed:
           type: object
+          readOnly: true
           properties:
             location:
               type: string
             datetime:
               type: string
               format: date-time
-      x-examples: {}
-    Document:
+    document:
       $ref: https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/schemas/v3.0/schema.json
-    Document-Attributes:
-      title: Document-Attributes
+    document_info:
+      $ref: https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/schemas/v3.0/schema.json#/definitions/Info
+    attribute:
+      title: Attribute
       type: object
       x-tags:
         - Documents
       properties:
-        documentTitle:
-          type: string
         name:
           type: string
         description:
@@ -231,15 +602,12 @@ components:
             - type: number
             - type: boolean
             - type: integer
-            - type: 'null'
-    Document-Maintainer:
-      title: Document-Maintainer
+    maintainer:
+      title: Maintainer
       type: object
       x-tags:
         - Documents
       properties:
-        documentTitle:
-          type: string
         maintainerId:
           type: string
         role:
@@ -248,3 +616,40 @@ components:
             - admin
             - write
             - read
+  responses:
+    204:
+      description: there is not additional content to send
+    400:
+      description: the request body was malformatted
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/simple_metadata'
+    401:
+      description: the requester was not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/simple_metadata'
+    403:
+      description: the requester was unauthorized to make the request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/simple_metadata'
+    404:
+      description: the resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/simple_metadata'
+    500:
+      description: the server could not fulfill the request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/simple_metadata'
+tags:
+  - name: Accounts
+  - name: Documents
+  - name: Auth
