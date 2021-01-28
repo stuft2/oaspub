@@ -121,6 +121,12 @@ paths:
       responses:
         201:
           description: returns the authentication information
+          headers:
+            location:
+              description: the location of the resource
+              required: true
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -174,6 +180,12 @@ paths:
       responses:
         201:
           description: returns the generated access token
+          headers:
+            location:
+              description: the location of the resource
+              required: true
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -249,6 +261,12 @@ paths:
       responses:
         201:
           description: create a new document
+          headers:
+            location:
+              description: the location of the resource
+              required: true
+              schema:
+                type: string
         400:
           $ref: '#/components/responses/400'
         401:
