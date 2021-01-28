@@ -12,10 +12,12 @@ info:
     email: spencer.tuft@gmail.com
 paths:
   "/accounts":
+    x-controller: accounts
     post:
       summary: create an account
       description: create an account
       operationId: createAccount
+      x-operation: createAccount
       tags:
         - Accounts
       responses:
@@ -42,10 +44,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/accounts/:accountId":
+    x-controller: accounts
     get:
       summary: get account information
       description: get account information
       operationId: getAccountInfo
+      x-operation: getAccountInfo
       tags:
         - Accounts
       responses:
@@ -69,6 +73,7 @@ paths:
       summary: update account information
       description: update account information
       operationId: updateAccountInfo
+      x-operation: updateAccountInfo
       tags:
         - Accounts
       responses:
@@ -92,6 +97,7 @@ paths:
       summary: deactivate account
       description: deactivate account
       operationId: deactivateAccount
+      x-operation: deactivateAccount
       tags:
         - Accounts
       responses:
@@ -104,10 +110,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/session":
+    x-controller: session
     post:
       summary: login
       description: login
       operationId: login
+      x-operation: login
       tags:
         - Auth
       responses:
@@ -126,10 +134,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/accounts/:accountId/tokens":
+    x-controller: accounts
     get:
       summary: list access tokens
       description: list access tokens
       operationId: listAccessTokens
+      x-operation: listAccessTokens
       tags:
         - Accounts
       responses:
@@ -158,6 +168,7 @@ paths:
       summary: generate access token
       description: generate access token
       operationId: generateAccessTokens
+      x-operation: generateAccessTokens
       tags:
         - Accounts
       responses:
@@ -180,10 +191,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/accounts/:accountId/tokens/:tokenId":
+    x-controller: accounts
     delete:
       summary: revoke access token
       description: revoke access token
       operationId: revokeAccessToken
+      x-operation: revokeAccessToken
       tags:
         - Accounts
       responses:
@@ -196,10 +209,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/documents":
+    x-controller: documents
     get:
       summary: list documents
       description: list documents
       operationId: listDocumentInfo
+      x-operation: listDocumentInfo
       tags:
         - Documents
       responses:
@@ -228,6 +243,7 @@ paths:
       summary: create new document
       description: create a new document
       operationId: createDocument
+      x-operation: createDocument
       tags:
         - Documents
       responses:
@@ -242,10 +258,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/documents/:documentId/versions":
+    x-controller: documents
     get:
       summary: list document history
       description: list document history
       operationId: listDocumentHistory
+      x-operation: listDocumentHistory
       tags:
         - Documents
       responses:
@@ -273,6 +291,7 @@ paths:
     post:
       summary: create new version
       operationId: publishDocumentVersion
+      x-operation: publishDocumentVersion
       tags:
         - Documents
       responses:
@@ -301,10 +320,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/documents/:documentId/versions/:version":
+    x-controller: documents
     get:
       summary: get document
       description: get document
       operationId: getDocument
+      x-operation: getDocument
       tags:
         - Documents
       responses:
@@ -325,10 +346,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/documents/:documentId/versions/:version/dependencies":
+    x-controller: documents
     get:
       summary: list dependencies
       description: list dependencies
       operationId: listDependencies
+      x-operation: listDependencies
       tags:
         - Documents
       responses:
@@ -354,10 +377,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/documents/:documentId/attributes":
+    x-controller: documents
     get:
       summary: get document settings
       description: get document settings
-      operationId: get-documents-:documentId-attributes
+      operationId: get
+      x-operation: get-documents-:documentId-attributes
       tags:
         - Documents
       responses:
@@ -383,9 +408,11 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/documents/:documentId/attributes/:name":
+    x-controller: documents
     put:
       summary: update document settings
       operationId: updateDocumentAttribute
+      x-operation: updateDocumentAttribute
       tags:
         - Documents
       responses:
@@ -408,10 +435,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/documents/:documentId/maintainers":
+    x-controller: documents
     get:
       summary: list maintainers
       description: list maintainers
       operationId: listDocumentMaintainers
+      x-operation: listDocumentMaintainers
       tags:
         - Documents
       responses:
@@ -439,6 +468,7 @@ paths:
     post:
       summary: invite maintainer
       operationId: sendMaintainerInvite
+      x-operation: sendMaintainerInvite
       tags:
         - Documents
       responses:
@@ -455,10 +485,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/document/:documentId/maintainers/:maintainerId":
+    x-controller: documents
     put:
       summary: acknowledge maintainer invite
       description: acknowledge maintainer invite
       operationId: acknowledgeMaintainerInvite
+      x-operation: acknowledgeMaintainerInvite
       tags:
         - Documents
       responses:
@@ -484,6 +516,7 @@ paths:
       summary: remove maintainer
       description: remove maintainer
       operationId: removeDocumentMaintainer
+      x-operation: removeDocumentMaintainer
       tags:
         - Documents
       responses:
