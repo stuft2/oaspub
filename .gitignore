@@ -1,1 +1,5 @@
+# JetBrains IDE
 .idea
+
+# NodeJS
+node_modules
