@@ -12,12 +12,12 @@ info:
     email: spencer.tuft@gmail.com
 paths:
   "/accounts":
-    x-controller: accounts
+    x-controller: account
     post:
       summary: create an account
       description: create an account
       operationId: createAccount
-      x-operation: createAccount
+      x-operation: create
       tags:
         - Accounts
       responses:
@@ -44,12 +44,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/accounts/:accountId":
-    x-controller: accounts
+    x-controller: account
     get:
       summary: get account information
       description: get account information
       operationId: getAccountInfo
-      x-operation: getAccountInfo
+      x-operation: retrieve
       tags:
         - Accounts
       responses:
@@ -73,7 +73,7 @@ paths:
       summary: update account information
       description: update account information
       operationId: updateAccountInfo
-      x-operation: updateAccountInfo
+      x-operation: update
       tags:
         - Accounts
       responses:
@@ -97,7 +97,7 @@ paths:
       summary: deactivate account
       description: deactivate account
       operationId: deactivateAccount
-      x-operation: deactivateAccount
+      x-operation: deactivate
       tags:
         - Accounts
       responses:
@@ -115,7 +115,7 @@ paths:
       summary: login
       description: login
       operationId: login
-      x-operation: login
+      x-operation: create
       tags:
         - Auth
       responses:
@@ -140,12 +140,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/accounts/:accountId/tokens":
-    x-controller: accounts
+    x-controller: access-token
     get:
       summary: list access tokens
       description: list access tokens
       operationId: listAccessTokens
-      x-operation: listAccessTokens
+      x-operation: list
       tags:
         - Accounts
       responses:
@@ -174,7 +174,7 @@ paths:
       summary: generate access token
       description: generate access token
       operationId: generateAccessTokens
-      x-operation: generateAccessTokens
+      x-operation: generate
       tags:
         - Accounts
       responses:
@@ -203,12 +203,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/accounts/:accountId/tokens/:tokenId":
-    x-controller: accounts
+    x-controller: access-token
     delete:
       summary: revoke access token
       description: revoke access token
       operationId: revokeAccessToken
-      x-operation: revokeAccessToken
+      x-operation: revoke
       tags:
         - Accounts
       responses:
@@ -221,12 +221,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/documents":
-    x-controller: documents
+    x-controller: catalog
     get:
-      summary: list documents
-      description: list documents
-      operationId: listDocumentInfo
-      x-operation: listDocumentInfo
+      summary: search documents
+      description: search document catalog
+      operationId: searchDocumentCatalog
+      x-operation: search
       tags:
         - Documents
       responses:
@@ -252,10 +252,10 @@ paths:
         500:
           $ref: '#/components/responses/500'
     post:
-      summary: create new document
-      description: create a new document
-      operationId: createDocument
-      x-operation: createDocument
+      summary: publish a document
+      description: publish a document version
+      operationId: publishDocumentVersion
+      x-operation: publish
       tags:
         - Documents
       responses:
@@ -276,17 +276,17 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/documents/:documentId/versions":
-    x-controller: documents
+    x-controller: document
     get:
-      summary: list document history
-      description: list document history
-      operationId: listDocumentHistory
-      x-operation: listDocumentHistory
+      summary: list document versions
+      description: list document versions
+      operationId: listDocumentVersions
+      x-operation: list
       tags:
         - Documents
       responses:
         200:
-          description: returns a list of documents
+          description: returns a list of document versions
           content:
             application/json:
               schema:
@@ -306,44 +306,13 @@ paths:
           $ref: '#/components/responses/404'
         500:
           $ref: '#/components/responses/500'
-    post:
-      summary: create new version
-      operationId: publishDocumentVersion
-      x-operation: publishDocumentVersion
-      tags:
-        - Documents
-      responses:
-        201:
-          description: returns the new version
-          headers:
-            location:
-              description: the location of the resource
-              required: true
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/simple_metadata'
-                  - $ref: '#/components/schemas/document'
-        400:
-          $ref: '#/components/responses/400'
-        401:
-          $ref: '#/components/responses/401'
-        403:
-          $ref: '#/components/responses/403'
-        404:
-          $ref: '#/components/responses/404'
-        500:
-          $ref: '#/components/responses/500'
   "/documents/:documentId/versions/:version":
-    x-controller: documents
+    x-controller: document
     get:
-      summary: get document
-      description: get document
+      summary: get a document
+      description: get a document
       operationId: getDocument
-      x-operation: getDocument
+      x-operation: retrieve
       tags:
         - Documents
       responses:
@@ -364,17 +333,17 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/documents/:documentId/versions/:version/dependencies":
-    x-controller: documents
+    x-controller: dependency
     get:
       summary: list dependencies
       description: list dependencies
       operationId: listDependencies
-      x-operation: listDependencies
+      x-operation: list
       tags:
         - Documents
       responses:
         200:
-          description: returns a list of documents that depend on this documents
+          description: returns a list of document dependencies
           content:
             application/json:
               schema:
@@ -394,71 +363,13 @@ paths:
           $ref: '#/components/responses/404'
         500:
           $ref: '#/components/responses/500'
-  "/documents/:documentId/attributes":
-    x-controller: documents
-    get:
-      summary: get document settings
-      description: get document settings
-      operationId: get
-      x-operation: get-documents-:documentId-attributes
-      tags:
-        - Documents
-      responses:
-        200:
-          description: returns the updated document settings
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/collection_metadata'
-                  - type: object
-                    properties:
-                      values:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/attribute'
-        401:
-          $ref: '#/components/responses/401'
-        403:
-          $ref: '#/components/responses/403'
-        404:
-          $ref: '#/components/responses/404'
-        500:
-          $ref: '#/components/responses/500'
-  "/documents/:documentId/attributes/:name":
-    x-controller: documents
-    put:
-      summary: update document settings
-      operationId: updateDocumentAttribute
-      x-operation: updateDocumentAttribute
-      tags:
-        - Documents
-      responses:
-        200:
-          description: returns the updated document settings
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/collection_metadata'
-                  - $ref: '#/components/schemas/attribute'
-        400:
-          $ref: '#/components/responses/400'
-        401:
-          $ref: '#/components/responses/401'
-        403:
-          $ref: '#/components/responses/403'
-        404:
-          $ref: '#/components/responses/404'
-        500:
-          $ref: '#/components/responses/500'
   "/documents/:documentId/maintainers":
-    x-controller: documents
+    x-controller: maintainer
     get:
       summary: list maintainers
       description: list maintainers
       operationId: listDocumentMaintainers
-      x-operation: listDocumentMaintainers
+      x-operation: list
       tags:
         - Documents
       responses:
@@ -485,8 +396,8 @@ paths:
           $ref: '#/components/responses/500'
     post:
       summary: invite maintainer
-      operationId: sendMaintainerInvite
-      x-operation: sendMaintainerInvite
+      operationId: inviteMaintainer
+      x-operation: invite
       tags:
         - Documents
       responses:
@@ -503,12 +414,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
   "/document/:documentId/maintainers/:maintainerId":
-    x-controller: documents
+    x-controller: maintainer
     put:
       summary: acknowledge maintainer invite
       description: acknowledge maintainer invite
       operationId: acknowledgeMaintainerInvite
-      x-operation: acknowledgeMaintainerInvite
+      x-operation: acknowledge
       tags:
         - Documents
       responses:
@@ -534,7 +445,7 @@ paths:
       summary: remove maintainer
       description: remove maintainer
       operationId: removeDocumentMaintainer
-      x-operation: removeDocumentMaintainer
+      x-operation: remove
       tags:
         - Documents
       responses:
