@@ -1,4 +1,3 @@
-/*eslint @typescript-eslint/camelcase: ["error", {allow: ["validation_response", "validation_information", "collection_size"]}]*/
 import {UAPI} from '@byu-oit/uapi-ts'
 
 export enum HttpStatus {

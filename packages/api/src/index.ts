@@ -1,7 +1,10 @@
 import path from 'path'
 import express, {Request, Response} from 'express'
+import debug from 'debug'
 import Enforcer from 'openapi-enforcer-middleware'
 import {EnforcerError} from './middleware/openapi-error'
+
+const logger = debug('api:server')
 
 ;(async (): Promise<void> => {
   try {
@@ -16,9 +19,9 @@ import {EnforcerError} from './middleware/openapi-error'
 
     app.use((req, res, next) => {
       const now = new Date()
-      console.log(`${req.method} called on ${req.originalUrl} at ${now.toLocaleTimeString('en-US', { timeZone: 'America/Denver', timeZoneName: 'short', weekday: 'short', month: 'short', day: 'numeric' })} (${now.toISOString()})`)
-      console.log('Query:', req.query)
-      console.log('Body:', JSON.stringify(req.body))
+      logger(`${req.method} called on ${req.originalUrl} at ${now.toLocaleTimeString('en-US', { timeZone: 'America/Denver', timeZoneName: 'short', weekday: 'short', month: 'short', day: 'numeric' })} (${now.toISOString()})`)
+      logger('Query:', req.query)
+      logger('Body:', JSON.stringify(req.body))
       next()
     })
 
@@ -38,10 +41,10 @@ import {EnforcerError} from './middleware/openapi-error'
     // Start server
     const port = process.env.PORT ? parseInt(process.env.PORT) : 3000
     app.listen(port, () => {
-      console.log(`Server started on port ${port}`)
+      logger(`Server started on port ${port}`)
     })
   } catch (e) {
-    console.error('Error starting server:', e)
+    logger('Error starting server:', e)
     process.exit(1)
   }
 })()

@@ -1,12 +1,17 @@
 import {Request, Response, NextFunction} from 'express'
+import debug from 'debug'
 import {generateMetadataResponseObj, HttpStatus} from '../util/uapi'
+
+const logger = debug('api:enforcer')
 
 // TODO - Add better type definitions when openapi enforcer adds them
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function EnforcerError (err: Error & { exception: any }, req: Request, res: Response, next: NextFunction): any {
+export function EnforcerError (err: Error & { exception: { header: string } }, req: Request, res: Response, next: NextFunction): void {
   if (err && err.exception && err.exception.header === 'Request has one or more errors') {
-    return res.status(HttpStatus.BAD_REQUEST).send(generateMetadataResponseObj(HttpStatus.BAD_REQUEST, undefined, err.message.split('\n')))
+    res.status(HttpStatus.BAD_REQUEST).send(generateMetadataResponseObj(HttpStatus.BAD_REQUEST, undefined, err.message.split('\n')))
+    return next()
   }
-  console.error(err.stack)
-  return res.status(HttpStatus.INTERNAL_ERROR).send(generateMetadataResponseObj(HttpStatus.INTERNAL_ERROR))
+  logger('%O', err.stack)
+  res.status(HttpStatus.INTERNAL_ERROR).send(generateMetadataResponseObj(HttpStatus.INTERNAL_ERROR))
+  return next()
 }

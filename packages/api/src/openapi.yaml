@@ -5,21 +5,26 @@ info:
   license:
     name: 'Apache-2.0'
     url: 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-  description: An OpenAPI Specification Manager for discovering and versioning OpenAPI
-    documents across an organization.
+  description: An OpenAPI Specification Manager for discovering and versioning OpenAPI documents across an organization. Document semantic versioning is enforced by checking the version of the document during the upload process.
   contact:
     name: Spencer Tuft
     email: spencer.tuft@gmail.com
 paths:
-  "/accounts":
+  '/accounts':
     x-controller: account
     post:
-      summary: create an account
       description: create an account
+      summary: Creates a new account for a user or organization. All accounts are treated as organizations and not individuals.
       operationId: createAccount
       x-operation: create
       tags:
         - Accounts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/account'
       responses:
         201:
           description: created a resource
@@ -43,13 +48,17 @@ paths:
           $ref: '#/components/responses/403'
         500:
           $ref: '#/components/responses/500'
-  "/accounts/:accountId":
+  '/accounts/{accountId}':
     x-controller: account
+    parameters:
+      - $ref: '#/components/parameters/accountId'
     get:
-      summary: get account information
       description: get account information
+      summary: Returns nonsensitive account information such as names and email address
       operationId: getAccountInfo
       x-operation: retrieve
+      security:
+        - bearer: [ ]
       tags:
         - Accounts
       responses:
@@ -69,13 +78,21 @@ paths:
           $ref: '#/components/responses/400'
         500:
           $ref: '#/components/responses/500'
-    put:
-      summary: update account information
+    patch:
       description: update account information
+      summary: Updates the fields in the account information that are provided
       operationId: updateAccountInfo
       x-operation: update
+      security:
+        - bearer: [ ]
       tags:
         - Accounts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/account'
       responses:
         200:
           description: returns the updated account information
@@ -94,10 +111,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
     delete:
-      summary: deactivate account
       description: deactivate account
+      summary: Deactivates the account. Signing in again will reactivate the account. Deactivated accounts will not show up in public searches. This does not delete or deprecate documents under the account.
       operationId: deactivateAccount
       x-operation: deactivate
+      security:
+        - bearer: [ ]
       tags:
         - Accounts
       responses:
@@ -109,15 +128,21 @@ paths:
           $ref: '#/components/responses/403'
         500:
           $ref: '#/components/responses/500'
-  "/session":
+  '/session':
     x-controller: session
     post:
-      summary: login
       description: login
+      summary: Establishes a session with the client using JSON Web Tokens
       operationId: login
       x-operation: create
       tags:
         - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/session'
       responses:
         201:
           description: returns the authentication information
@@ -139,15 +164,19 @@ paths:
           $ref: '#/components/responses/404'
         500:
           $ref: '#/components/responses/500'
-  "/accounts/:accountId/tokens":
+  '/tokens':
     x-controller: access-token
+    parameters:
+      - $ref: '#/components/parameters/accountId'
     get:
-      summary: list access tokens
       description: list access tokens
+      summary: Lists the access token metadata associated with the account. It does not return the access tokens.
       operationId: listAccessTokens
       x-operation: list
+      security:
+        - bearer: [ ]
       tags:
-        - Accounts
+        - Access Tokens
       responses:
         200:
           description: returns the list of access tokens generated
@@ -171,12 +200,20 @@ paths:
         500:
           $ref: '#/components/responses/500'
     post:
-      summary: generate access token
       description: generate access token
+      summary: Generates a new access token associated with the account of the calling identity. The access token is only returned in the response of this call.
       operationId: generateAccessTokens
       x-operation: generate
+      security:
+        - bearer: [ ]
       tags:
-        - Accounts
+        - Access Tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/token'
       responses:
         201:
           description: returns the generated access token
@@ -202,15 +239,20 @@ paths:
           $ref: '#/components/responses/404'
         500:
           $ref: '#/components/responses/500'
-  "/accounts/:accountId/tokens/:tokenId":
+  '/tokens/{tokenId}':
     x-controller: access-token
+    parameters:
+      - $ref: '#/components/parameters/accountId'
+      - $ref: '#/components/parameters/tokenId'
     delete:
-      summary: revoke access token
       description: revoke access token
+      summary: Removes the access token from the caller account.
       operationId: revokeAccessToken
       x-operation: revoke
+      security:
+        - bearer: [ ]
       tags:
-        - Accounts
+        - Access Tokens
       responses:
         204:
           $ref: '#/components/responses/204'
@@ -220,11 +262,11 @@ paths:
           $ref: '#/components/responses/403'
         500:
           $ref: '#/components/responses/500'
-  "/documents":
+  '/documents':
     x-controller: catalog
     get:
-      summary: search documents
       description: search document catalog
+      summary: Filters through the OpenAPI documents in the service based on the query parameters provided.
       operationId: searchDocumentCatalog
       x-operation: search
       tags:
@@ -252,12 +294,20 @@ paths:
         500:
           $ref: '#/components/responses/500'
     post:
-      summary: publish a document
       description: publish a document version
+      summary: Publishes an OpenAPI document. Versions must be unique.
       operationId: publishDocumentVersion
       x-operation: publish
+      security:
+        - bearer: [ ]
       tags:
         - Documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/document'
       responses:
         201:
           description: create a new document
@@ -275,11 +325,13 @@ paths:
           $ref: '#/components/responses/403'
         500:
           $ref: '#/components/responses/500'
-  "/documents/:documentId/versions":
+  '/documents/{documentId}/versions':
     x-controller: document
+    parameters:
+      - $ref: '#/components/parameters/documentId'
     get:
-      summary: list document versions
       description: list document versions
+      summary: Lists the document version history for discovery and browsing purposes.
       operationId: listDocumentVersions
       x-operation: list
       tags:
@@ -306,11 +358,14 @@ paths:
           $ref: '#/components/responses/404'
         500:
           $ref: '#/components/responses/500'
-  "/documents/:documentId/versions/:version":
+  '/documents/{documentId}/versions/{version}':
     x-controller: document
+    parameters:
+      - $ref: '#/components/parameters/documentId'
+      - $ref: '#/components/parameters/version'
     get:
-      summary: get a document
       description: get a document
+      summary: Returns a specific version of an OpenAPI document. The version string follows the semantic version specification described at https://semver.org.
       operationId: getDocument
       x-operation: retrieve
       tags:
@@ -332,11 +387,14 @@ paths:
           $ref: '#/components/responses/404'
         500:
           $ref: '#/components/responses/500'
-  "/documents/:documentId/versions/:version/dependencies":
+  '/documents/{documentId}/versions/{version}/dependencies':
     x-controller: dependency
+    parameters:
+      - $ref: '#/components/parameters/documentId'
+      - $ref: '#/components/parameters/version'
     get:
-      summary: list dependencies
       description: list dependencies
+      summary: Lists the dependencies of the given document version. Dependencies are external references referenced within the document.
       operationId: listDependencies
       x-operation: list
       tags:
@@ -363,15 +421,21 @@ paths:
           $ref: '#/components/responses/404'
         500:
           $ref: '#/components/responses/500'
-  "/documents/:documentId/maintainers":
+  '/documents/{documentId}/maintainers':
     x-controller: maintainer
+    parameters:
+      - $ref: '#/components/parameters/documentId'
     get:
-      summary: list maintainers
       description: list maintainers
+      summary: Lists the maintainers for a given document.
       operationId: listDocumentMaintainers
       x-operation: list
+      security:
+        - bearer: [ ]
       tags:
         - Documents
+      parameters:
+        - $ref: '#/components/parameters/roles'
       responses:
         200:
           description: returns a list of maintainers for a document
@@ -398,8 +462,16 @@ paths:
       summary: invite maintainer
       operationId: inviteMaintainer
       x-operation: invite
+      security:
+        - bearer: [ ]
       tags:
         - Documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/maintainer'
       responses:
         202:
           description: Sends an invite to a user to be a document maintainer
@@ -413,15 +485,26 @@ paths:
           $ref: '#/components/responses/404'
         500:
           $ref: '#/components/responses/500'
-  "/document/:documentId/maintainers/:maintainerId":
+  '/document/{documentId}/maintainers/{accountId}':
     x-controller: maintainer
-    put:
-      summary: acknowledge maintainer invite
+    parameters:
+      - $ref: '#/components/parameters/documentId'
+      - $ref: '#/components/parameters/accountId'
+    patch:
       description: acknowledge maintainer invite
+      summary: Accept or deny an invite to assume a role for the specified OpenAPI document.
       operationId: acknowledgeMaintainerInvite
       x-operation: acknowledge
+      security:
+        - bearer: [ ]
       tags:
         - Documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/acknowledgement'
       responses:
         200:
           description: updates the maintainer invite
@@ -429,8 +512,13 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/simple_metadata'
-                  - $ref: '#/components/schemas/maintainer'
+                  - $ref: '#/components/schemas/collection_metadata'
+                  - type: object
+                    properties:
+                      values:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/maintainer'
         400:
           $ref: '#/components/responses/400'
         401:
@@ -442,10 +530,12 @@ paths:
         500:
           $ref: '#/components/responses/500'
     delete:
-      summary: remove maintainer
       description: remove maintainer
+      summary: Removes a maintainer from a given document. Only an admin or self-serving account may do so. A document must always have at least one admin maintainer.
       operationId: removeDocumentMaintainer
       x-operation: remove
+      security:
+        - bearer: [ ]
       tags:
         - Documents
       responses:
@@ -461,6 +551,7 @@ components:
   schemas:
     collection_metadata:
       title: Collection Metadata
+      description: The collection metadata is returned for responses that contain lists which are usually paginated.
       type: object
       allOf:
         - $ref: '#/components/schemas/simple_metadata'
@@ -474,6 +565,7 @@ components:
               type: number
     simple_metadata:
       title: Simple Metadata
+      description: The simple metadata is returned for single resource responses.
       type: object
       properties:
         metadata:
@@ -487,6 +579,7 @@ components:
                 type: string
     validation_response:
       title: Validation Response
+      description: The validation response contains the status code and a message from the server describing the reason for the given status code response.
       type: object
       properties:
         code:
@@ -497,35 +590,40 @@ components:
           readOnly: true
     session:
       title: Session
+      description: A session allows the web service to authenticate and identify an individual without the repeated use of their username/password combination.
       type: object
       properties:
         jwt:
           type: string
           readOnly: true
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
     account:
       title: Account
+      description: The information requisite for providing services for an entity. The username is necessary for assisting clients in looking up other accounts. The email may be used to login but it's primary function is for sending business communications to the entity.
       type: object
-      x-tags:
-        - Accounts
-        - Auth
       properties:
         id:
           type: string
           readOnly: true
-        email:
+        username:
           type: string
         password:
           type: string
           writeOnly: true
-        surname:
+        confirmedPassword:
           type: string
-        givenName:
+          writeOnly: true
+        email:
           type: string
     token:
       title: Token
+      description: A token is necessary for publishing documents from the command line or for granting access to third party integrations. The location and date-time associated with the token help the client identify when and where tokens were last used.
       type: object
-      x-tags:
-        - Auth
       properties:
         id:
           type: string
@@ -534,7 +632,7 @@ components:
           type: string
         token:
           type: string
-          readOnly: true
+          writeOnly: true
         lastUsed:
           type: object
           readOnly: true
@@ -545,39 +643,39 @@ components:
               type: string
               format: date-time
     document:
-      $ref: https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/schemas/v3.0/schema.json
-    document_info:
-      $ref: https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/schemas/v3.0/schema.json#/definitions/Info
-    attribute:
-      title: Attribute
+      title: Document
       type: object
-      x-tags:
-        - Documents
       properties:
-        name:
-          type: string
-        description:
-          type: string
-        value:
-          oneOf:
-            - type: string
-            - type: number
-            - type: boolean
-            - type: integer
+        document:
+          $ref: https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/schemas/v3.0/schema.json#/properties
+    document_info:
+      title: DocumentInfo
+      type: object
+      properties:
+        documentInfo:
+          $ref: https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/schemas/v3.0/schema.json#/definitions/Info
     maintainer:
       title: Maintainer
+      description: A maintainer may be granted privileges for a specific document. Admin privileges indicate that the account can modify metadata associated with the document and deprecate the document.
       type: object
-      x-tags:
-        - Documents
       properties:
-        maintainerId:
+        accountId:
           type: string
+          writeOnly: true
         role:
           type: string
           enum:
             - admin
             - write
             - read
+    acknowledgement:
+      title: Acknowledgement
+      description: For an account to be granted privileges for a specific document, they must accept the invitation sent by a document administrator. Only then can they exercise the privileges they were granted.
+      type: object
+      properties:
+        acknowledged:
+          type: boolean
+          writeOnly: true
   responses:
     204:
       description: there is not additional content to send
@@ -611,7 +709,55 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/simple_metadata'
+  securitySchemes:
+    bearer:
+      type: http
+      description: browser authentication
+      scheme: bearer
+      bearerFormat: bearer {token}
+  parameters:
+    accountId:
+      name: accountId
+      description: The username of the account
+      in: path
+      required: true
+      schema:
+        type: string
+    tokenId:
+      name: tokenId
+      description: The unique identifier for an access token
+      in: path
+      required: true
+      schema:
+        type: string
+    documentId:
+      name: documentId
+      description: The name of an OpenAPI document
+      in: path
+      required: true
+      schema:
+        type: string
+    version:
+      name: version
+      description: The semantic version of an OpenAPI document
+      in: path
+      required: true
+      schema:
+        type: string
+    roles:
+      name: roles
+      description: filters the list of maintainers by their role
+      in: query
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - admin
+            - write
+            - read
 tags:
-  - name: Accounts
-  - name: Documents
   - name: Auth
+  - name: Accounts
+  - name: Access Tokens
+  - name: Documents
