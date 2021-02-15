@@ -1,13 +1,16 @@
 import {Request, Response} from 'express'
+import {Db} from 'mongodb'
 
-export async function list (req: Request, res: Response) {
+export = function (db: Db): Record<string, (req: Request, res: Response) => Promise<unknown>> {
+  return {
+    async list (req: Request, res: Response) {
 
-}
+    },
+    async generate (req: Request, res: Response) {
 
-export async function generate (req: Request, res: Response) {
+    },
+    async revoke (req: Request, res: Response) {
 
-}
-
-export async function revoke (req: Request, res: Response) {
-
+    }
+  }
 }

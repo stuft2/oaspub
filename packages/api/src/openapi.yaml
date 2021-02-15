@@ -617,6 +617,7 @@ components:
           writeOnly: true
         email:
           type: string
+          format: email
     token:
       title: Token
       description: A token is necessary for publishing documents from the command line or for granting access to third party integrations. The location and date-time associated with the token help the client identify when and where tokens were last used.

@@ -1,6 +1,10 @@
 import {Request, Response} from 'express'
-import {MongoClient} from 'mongodb'
+import {Db} from 'mongodb'
 
-export async function list (req: Request, res: Response) {
+export = function (db: Db): Record<string, (req: Request, res: Response) => Promise<unknown>> {
+  return {
+    async list (req: Request, res: Response) {
 
+    }
+  }
 }

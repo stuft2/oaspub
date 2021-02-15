@@ -28,6 +28,7 @@
   "homepage": "https://github.com/stuft2/oasm#readme",
   "dependencies": {
     "debug": "^4.3.1",
+    "env-var": "^7.0.0",
     "express": "^4.17.1",
     "mongodb": "^3.6.3",
     "openapi-enforcer": "^1.13.1",
