@@ -11,7 +11,7 @@ const logger = debug('api:server')
     const app = express()
 
     const controllerDir = path.resolve(__dirname, 'controllers')
-    const oasPath = path.resolve(__dirname, 'openapi.json')
+    const oasPath = path.resolve(__dirname, 'openapi.yaml')
 
     app.get('/xhealth', (req: Request, res: Response) => res.status(200).send('The force is strong with this one.'))
 

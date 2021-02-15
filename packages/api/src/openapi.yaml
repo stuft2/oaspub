@@ -13,8 +13,8 @@ paths:
   '/accounts':
     x-controller: account
     post:
-      description: create an account
-      summary: Creates a new account for a user or organization. All accounts are treated as organizations and not individuals.
+      summary: create an account
+      description: Creates a new account for a user or organization. All accounts are treated as organizations and not individuals.
       operationId: createAccount
       x-operation: create
       tags:
@@ -53,8 +53,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/accountId'
     get:
-      description: get account information
-      summary: Returns nonsensitive account information such as names and email address
+      summary: get account information
+      description: Returns nonsensitive account information such as names and email address
       operationId: getAccountInfo
       x-operation: retrieve
       security:
@@ -79,8 +79,8 @@ paths:
         500:
           $ref: '#/components/responses/500'
     patch:
-      description: update account information
-      summary: Updates the fields in the account information that are provided
+      summary: update account information
+      description: Updates the fields in the account information that are provided
       operationId: updateAccountInfo
       x-operation: update
       security:
@@ -111,8 +111,8 @@ paths:
         500:
           $ref: '#/components/responses/500'
     delete:
-      description: deactivate account
-      summary: Deactivates the account. Signing in again will reactivate the account. Deactivated accounts will not show up in public searches. This does not delete or deprecate documents under the account.
+      summary: deactivate account
+      description: Deactivates the account. Signing in again will reactivate the account. Deactivated accounts will not show up in public searches. This does not delete or deprecate documents under the account.
       operationId: deactivateAccount
       x-operation: deactivate
       security:
@@ -131,8 +131,8 @@ paths:
   '/session':
     x-controller: session
     post:
-      description: login
-      summary: Establishes a session with the client using JSON Web Tokens
+      summary: login
+      description: Establishes a session with the client using JSON Web Tokens
       operationId: login
       x-operation: create
       tags:
@@ -166,11 +166,9 @@ paths:
           $ref: '#/components/responses/500'
   '/tokens':
     x-controller: access-token
-    parameters:
-      - $ref: '#/components/parameters/accountId'
     get:
-      description: list access tokens
-      summary: Lists the access token metadata associated with the account. It does not return the access tokens.
+      summary: list access tokens
+      description: Lists the access token metadata associated with the account. It does not return the access tokens.
       operationId: listAccessTokens
       x-operation: list
       security:
@@ -200,8 +198,8 @@ paths:
         500:
           $ref: '#/components/responses/500'
     post:
-      description: generate access token
-      summary: Generates a new access token associated with the account of the calling identity. The access token is only returned in the response of this call.
+      summary: generate access token
+      description: Generates a new access token associated with the account of the calling identity. The access token is only returned in the response of this call.
       operationId: generateAccessTokens
       x-operation: generate
       security:
@@ -242,11 +240,10 @@ paths:
   '/tokens/{tokenId}':
     x-controller: access-token
     parameters:
-      - $ref: '#/components/parameters/accountId'
       - $ref: '#/components/parameters/tokenId'
     delete:
-      description: revoke access token
-      summary: Removes the access token from the caller account.
+      summary: revoke access token
+      description: Removes the access token from the caller account.
       operationId: revokeAccessToken
       x-operation: revoke
       security:
@@ -265,8 +262,8 @@ paths:
   '/documents':
     x-controller: catalog
     get:
-      description: search document catalog
-      summary: Filters through the OpenAPI documents in the service based on the query parameters provided.
+      summary: search document catalog
+      description: Filters through the OpenAPI documents in the service based on the query parameters provided.
       operationId: searchDocumentCatalog
       x-operation: search
       tags:
@@ -294,8 +291,8 @@ paths:
         500:
           $ref: '#/components/responses/500'
     post:
-      description: publish a document version
-      summary: Publishes an OpenAPI document. Versions must be unique.
+      summary: publish a document version
+      description: Publishes an OpenAPI document. Versions must be unique.
       operationId: publishDocumentVersion
       x-operation: publish
       security:
@@ -330,8 +327,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/documentId'
     get:
-      description: list document versions
-      summary: Lists the document version history for discovery and browsing purposes.
+      summary: list document versions
+      description: Lists the document version history for discovery and browsing purposes.
       operationId: listDocumentVersions
       x-operation: list
       tags:
@@ -364,8 +361,8 @@ paths:
       - $ref: '#/components/parameters/documentId'
       - $ref: '#/components/parameters/version'
     get:
-      description: get a document
-      summary: Returns a specific version of an OpenAPI document. The version string follows the semantic version specification described at https://semver.org.
+      summary: get a document
+      description: Returns a specific version of an OpenAPI document. The version string follows the semantic version specification described at https://semver.org.
       operationId: getDocument
       x-operation: retrieve
       tags:
@@ -393,8 +390,8 @@ paths:
       - $ref: '#/components/parameters/documentId'
       - $ref: '#/components/parameters/version'
     get:
-      description: list dependencies
-      summary: Lists the dependencies of the given document version. Dependencies are external references referenced within the document.
+      summary: list dependencies
+      description: Lists the dependencies of the given document version. Dependencies are external references referenced within the document.
       operationId: listDependencies
       x-operation: list
       tags:
@@ -426,8 +423,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/documentId'
     get:
-      description: list maintainers
-      summary: Lists the maintainers for a given document.
+      summary: list maintainers
+      description: Lists the maintainers for a given document.
       operationId: listDocumentMaintainers
       x-operation: list
       security:
@@ -491,8 +488,8 @@ paths:
       - $ref: '#/components/parameters/documentId'
       - $ref: '#/components/parameters/accountId'
     patch:
-      description: acknowledge maintainer invite
-      summary: Accept or deny an invite to assume a role for the specified OpenAPI document.
+      summary: acknowledge maintainer invite
+      description: Accept or deny an invite to assume a role for the specified OpenAPI document.
       operationId: acknowledgeMaintainerInvite
       x-operation: acknowledge
       security:
@@ -530,8 +527,8 @@ paths:
         500:
           $ref: '#/components/responses/500'
     delete:
-      description: remove maintainer
-      summary: Removes a maintainer from a given document. Only an admin or self-serving account may do so. A document must always have at least one admin maintainer.
+      summary: remove maintainer
+      description: Removes a maintainer from a given document. Only an admin or self-serving account may do so. A document must always have at least one admin maintainer.
       operationId: removeDocumentMaintainer
       x-operation: remove
       security:
@@ -644,16 +641,10 @@ components:
               format: date-time
     document:
       title: Document
-      type: object
-      properties:
-        document:
-          $ref: https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/schemas/v3.0/schema.json#/properties
+      description: Supports v2.0 and v3.0 of the OpenAPI specification
     document_info:
-      title: DocumentInfo
-      type: object
-      properties:
-        documentInfo:
-          $ref: https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/schemas/v3.0/schema.json#/definitions/Info
+      title: Document Info Object
+      description: The respective Info Object for the version of OpenAPI used.
     maintainer:
       title: Maintainer
       description: A maintainer may be granted privileges for a specific document. Admin privileges indicate that the account can modify metadata associated with the document and deprecate the document.
