@@ -27,9 +27,11 @@
   },
   "homepage": "https://github.com/stuft2/oasm#readme",
   "dependencies": {
+    "ajv": "^7.1.0",
     "debug": "^4.3.1",
     "env-var": "^7.0.0",
     "express": "^4.17.1",
+    "got": "^11.8.1",
     "mongodb": "^3.6.3",
     "openapi-enforcer": "^1.13.1",
     "openapi-enforcer-middleware": "^1.2.3"
@@ -48,6 +50,7 @@
     "eslint-plugin-prettier": "^3.3.1",
     "husky": "^4.3.8",
     "lint-staged": "^10.5.3",
+    "openapi-types": "^7.2.3",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3"

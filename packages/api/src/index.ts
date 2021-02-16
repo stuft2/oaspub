@@ -8,13 +8,12 @@ import {EnforcerError} from './middleware/openapi-error'
 
 const logger = debug('api:server')
 
-const {db, server} = env.get()
+const {server} = env.get()
 
 ;(async (): Promise<void> => {
   try {
     // Connect to database
-    const uri = `mongodb://${encodeURIComponent(db.username)}:${encodeURIComponent(db.password)}${db.host}:${db.port}/${db.database}`
-    const client = await connect(uri)
+    const client = await connect()
 
     // Create Express server instance
     const app = express()
@@ -36,7 +35,7 @@ const {db, server} = env.get()
 
     // Set up server paths using api definition document
     const controllerDir = path.resolve(__dirname, 'controllers')
-    const oasPath = path.resolve(__dirname, 'openapi.yaml')
+    const oasPath = path.resolve(__dirname, 'openapi.json')
 
     const enforcer = new Enforcer(oasPath)
     await enforcer.promise // Wait for enforcer to resolve OAS doc

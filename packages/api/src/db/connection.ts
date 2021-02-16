@@ -1,9 +1,14 @@
 import debug from 'debug'
-import {MongoClient} from 'mongodb'
+import {Db, MongoClient} from 'mongodb'
+import * as env from '../util/env'
+import {Account} from './models'
 
 const logger = debug('api:db')
 
-export async function connect (uri: string): Promise<MongoClient> {
+const {db} = env.get()
+const uri = `mongodb://${encodeURIComponent(db.username)}:${encodeURIComponent(db.password)}${db.host}:${db.port}`
+
+export async function connect (): Promise<MongoClient> {
   const client = new MongoClient(uri)
 
   try {
@@ -19,4 +24,19 @@ export async function connect (uri: string): Promise<MongoClient> {
     await client.close() // Ensure client closes on error
     throw e
   }
+}
+
+export async function initialize (): Promise<Db> {
+  const client = await connect()
+  const db = client.db('documents')
+
+  const models: {name: string}[] = [
+    Account
+  ]
+
+  for (const model of models) {
+    await db.createCollection(model.name)
+  }
+
+  return db
 }

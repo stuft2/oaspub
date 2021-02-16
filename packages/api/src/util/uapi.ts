@@ -40,7 +40,7 @@ export function generateValidationResponseObj(code: number, message?: string, va
     HttpStatus.CONFLICT,
     HttpStatus.INTERNAL_ERROR
   ].indexOf(code)=== -1) code = HttpStatus.INTERNAL_ERROR
-  if (message === undefined) message = getResponseForReturnCode(code)
+  if (!message) message = getResponseForReturnCode(code)
   return {
     validation_response: {code, message},
     ...validation.length && {validation_information: validation}
