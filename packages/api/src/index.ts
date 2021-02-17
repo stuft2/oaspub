@@ -37,7 +37,14 @@ const {server} = env.get()
     const controllerDir = path.resolve(__dirname, 'controllers')
     const oasPath = path.resolve(__dirname, 'openapi.json')
 
-    const enforcer = new Enforcer(oasPath)
+    const enforcer = new Enforcer(oasPath, {
+      componentOptions: {
+        exceptionSkipCodes: [
+          'WSCH001', // Ignore non standard format "email" used for type "string" (#/.../account)
+          'WSCH005' // Ignore schemas with an indeterminable type (#/.../document, #/.../document_info)
+        ]
+      }
+    })
     await enforcer.promise // Wait for enforcer to resolve OAS doc
 
     // Set up controllers, use dependency injection to pass through database connection
