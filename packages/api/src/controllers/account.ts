@@ -1,7 +1,7 @@
 import {Request, Response} from 'express'
 import {Db, MongoWriteConcernError} from 'mongodb'
 import {Account} from '../db/models'
-import {generateMetadataResponseObj, HttpStatus, ValidationError} from '../util/uapi'
+import {generateMetadataResponseObj, HttpStatus} from '../util/uapi'
 import debug from 'debug'
 
 const logger = debug('api:controller:account')
