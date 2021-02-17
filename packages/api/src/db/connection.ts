@@ -6,10 +6,12 @@ import {Account} from './models'
 const logger = debug('api:db')
 
 const {db} = env.get()
-const uri = `mongodb://${encodeURIComponent(db.username)}:${encodeURIComponent(db.password)}${db.host}:${db.port}`
+const uri = `mongodb://${encodeURIComponent(db.username)}:${encodeURIComponent(db.password)}@${db.host}:${db.port}`
 
 export async function connect (): Promise<MongoClient> {
-  const client = new MongoClient(uri)
+  const client = new MongoClient(uri, {
+    useUnifiedTopology: true // Clears Server Discover and Monitoring engine deprecation warning
+  })
 
   try {
     // Connect the client to the server

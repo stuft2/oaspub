@@ -1,10 +1,12 @@
 version: '3'
 services:
   api:
-    restart: always
+#    restart: always
     build: .
     ports:
       - ${PORT}:${PORT}
+    links:
+      - db
     environment:
       DEBUG: ${DEBUG}
       DB_USERNAME: ${DB_USERNAME}
