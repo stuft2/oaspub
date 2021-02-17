@@ -1,8 +1,12 @@
 version: '3'
 services:
   api:
-#    restart: always
-    build: .
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        port: ${PORT}
     ports:
       - ${PORT}:${PORT}
     links:
@@ -12,8 +16,9 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_DATABASE_NAME: ${DB_DATABASE_NAME}
-      DB_ADDRESS: ${DB_ADDRESS}
+      DB_ADDRESS: db # use service name only in docker compose
       DB_PORT: ${DB_PORT}
+      PORT: ${PORT}
   db:
     image: mongo
     ports:
