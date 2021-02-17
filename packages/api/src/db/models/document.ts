@@ -1,12 +1,6 @@
-import Ajv, {AnySchemaObject, ValidateFunction} from 'ajv'
-import got from 'got'
+import {ValidateFunction} from 'ajv'
 import { OpenAPIV2, OpenAPIV3 } from 'openapi-types'
-
-const ajv = new Ajv({loadSchema})
-
-async function loadSchema(uri: string): Promise<AnySchemaObject> {
-  return got(uri).json()
-}
+import {ajv} from '../../util/ajv'
 
 export class DocumentV3 implements OpenAPIV3.Document {
   static validate: ValidateFunction

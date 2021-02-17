@@ -1,7 +1,7 @@
-import Ajv from 'ajv'
 import * as oas from '../../openapi.json'
+import {ajv} from '../../util/ajv'
 
-const validate = new Ajv().compile<TokenModel>(oas.components.schemas.token)
+const validate = ajv.compile<TokenModel>(oas.components.schemas.token)
 
 export interface TokenModel {
   description: string

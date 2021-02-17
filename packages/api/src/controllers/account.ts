@@ -11,9 +11,11 @@ export = function (db: Db): Record<string, (req: Request, res: Response) => Prom
     async create (req: Request, res: Response) {
       try {
         const account = Account.fromJson(req.body)
-        const {ops} = await db.collection<Account>(Account.name).insertOne(account)
-        // TODO - finish handling ops
-        return res.send('OK')
+        const {ops: [result]} = await db.collection<Account>(Account.name).insertOne(account)
+        return res.status(HttpStatus.CREATED).send({
+          ...new Account(result).toJson(),
+          ...generateMetadataResponseObj(HttpStatus.CREATED)
+        })
       } catch (e) {
         if (e instanceof TypeError) {
           return res.status(HttpStatus.BAD_REQUEST).send(generateMetadataResponseObj(HttpStatus.BAD_REQUEST, undefined, e.message.split('\n')))
@@ -26,13 +28,43 @@ export = function (db: Db): Record<string, (req: Request, res: Response) => Prom
       }
     },
     async retrieve (req: Request, res: Response) {
-
+      try {
+        const _id = req.params.accountId
+        const account = await db.collection<Account>(Account.name).findOne({_id})
+        if (!account) return res.status(HttpStatus.NOT_FOUND).send(generateMetadataResponseObj(HttpStatus.NOT_FOUND))
+        return res.send({
+          ...new Account(account).toJson(),
+          ...generateMetadataResponseObj(HttpStatus.SUCCESS)
+        })
+      } catch (e) {
+        logger('An unexpected error occurred while processing the request: %O', e)
+        return res.status(HttpStatus.INTERNAL_ERROR).send(generateMetadataResponseObj(HttpStatus.INTERNAL_ERROR))
+      }
     },
     async update (req: Request, res: Response) {
-
+      try {
+        const _id = req.params.accountId
+        const account = Account.fromJson(req.body)
+        const {value} = await db.collection<Account>(Account.name).findOneAndUpdate({_id}, account)
+        if (!value) return res.status(HttpStatus.NOT_FOUND).send(generateMetadataResponseObj(HttpStatus.NOT_FOUND))
+        return res.send({
+          ...new Account(value).toJson(),
+          ...generateMetadataResponseObj(HttpStatus.SUCCESS)
+        })
+      } catch (e) {
+        logger('An unexpected error occurred while processing the request: %O', e)
+        return res.status(HttpStatus.INTERNAL_ERROR).send(generateMetadataResponseObj(HttpStatus.INTERNAL_ERROR))
+      }
     },
     async deactivate (req: Request, res: Response) {
-
+      try {
+        const _id = req.params.accountId
+        await db.collection<Account>(Account.name).findOneAndDelete({_id})
+        return res.status(HttpStatus.NO_CONTENT).send()
+      } catch (e) {
+        logger('An unexpected error occurred while processing the request: %O', e)
+        return res.status(HttpStatus.INTERNAL_ERROR).send(generateMetadataResponseObj(HttpStatus.INTERNAL_ERROR))
+      }
     }
   }
 }

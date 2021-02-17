@@ -1,7 +1,7 @@
-import Ajv from 'ajv'
+import {ajv} from '../../util/ajv'
 import * as oas from '../../openapi.json'
 
-const validate = new Ajv().compile<AccountModel>(oas.components.schemas.account)
+const validate = ajv.compile<AccountModel>(oas.components.schemas.account)
 
 export interface AccountModel {
   username: string
@@ -14,18 +14,22 @@ export class Account implements AccountModel {
   email: string
   password?: string
 
-  constructor(username: string, email: string, password?: string) {
-    this.username = username
-    this.email = email
-    if (password) this.password = password
-  }
-
-  static fromJson (obj: unknown) {
-    if (!Account.isAccount(obj)) throw TypeError(validate.errors?.join('\n'))
-    return new Account(obj.username, obj.email, obj.password)
+  constructor(obj: AccountModel) {
+    this.username = obj.username
+    this.email = obj.email
+    this.password = obj.password
   }
 
   static isAccount (value: unknown): value is AccountModel {
     return validate(value)
+  }
+
+  static fromJson (obj: unknown, partial = false) {
+    if (!Account.isAccount(obj)) throw TypeError(validate.errors?.join('\n'))
+    return new Account(obj)
+  }
+
+  toJson () {
+    return {username: this.username, email: this.email}
   }
 }

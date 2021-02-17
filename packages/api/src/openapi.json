@@ -130,7 +130,7 @@
           }
         }
       },
-      "patch": {
+      "put": {
         "summary": "update account information",
         "description": "Updates the fields in the account information that are provided",
         "operationId": "updateAccountInfo",
@@ -834,7 +834,7 @@
           "$ref": "#/components/parameters/accountId"
         }
       ],
-      "patch": {
+      "put": {
         "summary": "acknowledge maintainer invite",
         "description": "Accept or deny an invite to assume a role for the specified OpenAPI document.",
         "operationId": "acknowledgeMaintainerInvite",
@@ -1020,7 +1020,7 @@
         "description": "The information requisite for providing services for an entity. The username is necessary for assisting clients in looking up other accounts. The email may be used to login but it's primary function is for sending business communications to the entity.",
         "type": "object",
         "properties": {
-          "id": {
+          "_id": {
             "type": "string",
             "readOnly": true
           },
@@ -1042,12 +1042,12 @@
         "description": "A token is necessary for publishing documents from the command line or for granting access to third party integrations. The location and date-time associated with the token help the client identify when and where tokens were last used.",
         "type": "object",
         "required": [
-          "id",
+          "_id",
           "description",
           "lastUsed"
         ],
         "properties": {
-          "id": {
+          "_id": {
             "type": "string",
             "readOnly": true
           },

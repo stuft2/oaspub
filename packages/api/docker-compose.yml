@@ -1,0 +1,22 @@
+version: '3'
+services:
+  api:
+    restart: always
+    build: .
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      DEBUG: ${DEBUG}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE_NAME: ${DB_DATABASE_NAME}
+      DB_ADDRESS: ${DB_ADDRESS}
+      DB_PORT: ${DB_PORT}
+  db:
+    image: mongo
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_DATABASE_NAME}
