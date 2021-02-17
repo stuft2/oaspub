@@ -1,7 +1,7 @@
 import debug from 'debug'
 import {Db, MongoClient} from 'mongodb'
 import * as env from '../util/env'
-import {Account} from './models'
+import {Account, Document, Token} from './models'
 
 const logger = debug('api:db')
 
@@ -32,13 +32,19 @@ export async function initialize (): Promise<Db> {
   const client = await connect()
   const db = client.db('documents')
 
-  const models: {name: string}[] = [
-    Account
-  ]
+  const models = [Account, Document, Token]
 
-  for (const model of models) {
-    await db.createCollection(model.name)
-  }
+  const collections = await db.collections()
+
+  await Promise.all(models.map(async model => {
+    const collectionName = model.name.toLowerCase()
+    if (collections.every(collection => collection.collectionName !== collectionName)) {
+      await db.createCollection(collectionName)
+      logger('Created collection %s', collectionName)
+      return
+    }
+    logger('Collection %s already exists', collectionName)
+  }))
 
   return db
 }

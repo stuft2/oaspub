@@ -3,7 +3,7 @@ import express, {Request, Response} from 'express'
 import debug from 'debug'
 import Enforcer from 'openapi-enforcer-middleware'
 import * as env from './util/env'
-import {connect} from './db/connection'
+import * as db from './db/connection'
 import {EnforcerError} from './middleware/openapi-error'
 
 const logger = debug('api:server')
@@ -12,8 +12,8 @@ const {server} = env.get()
 
 ;(async (): Promise<void> => {
   try {
-    // Connect to database
-    const client = await connect()
+    // Connect to and initialize database
+    const database = await db.initialize()
 
     // Create Express server instance
     const app = express()
@@ -48,7 +48,7 @@ const {server} = env.get()
     await enforcer.promise // Wait for enforcer to resolve OAS doc
 
     // Set up controllers, use dependency injection to pass through database connection
-    await enforcer.controllers(controllerDir, client.db)
+    await enforcer.controllers(controllerDir, database)
 
     // Plugin enforcer middleware to Express
     app.use(enforcer.middleware())
