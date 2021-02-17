@@ -1,5 +1,6 @@
 import * as oas from '../../openapi.json'
 import {ajv} from '../../util/ajv'
+import {ValidationError} from '../../util/uapi'
 
 const validate = ajv.compile<TokenModel>(oas.components.schemas.token)
 
@@ -29,7 +30,7 @@ export class Token implements TokenModel {
   }
 
   static fromJson (obj: unknown) {
-    if (!Token.isAccount(obj)) throw TypeError(validate.errors?.join('\n'))
+    if (!Token.isAccount(obj)) throw new ValidationError(validate.errors?.slice()) // Copy errors
     return new Token(obj)
   }
 

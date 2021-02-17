@@ -1,6 +1,7 @@
 import {ValidateFunction} from 'ajv'
 import { OpenAPIV2, OpenAPIV3 } from 'openapi-types'
 import {ajv} from '../../util/ajv'
+import {ValidationError} from '../../util/uapi'
 
 export class DocumentV3 implements OpenAPIV3.Document {
   static validate: ValidateFunction
@@ -31,7 +32,7 @@ export class DocumentV3 implements OpenAPIV3.Document {
   }
 
   static async fromJson (obj: unknown) {
-    if (!DocumentV3.isDocumentV2(obj)) throw TypeError(DocumentV3.validate.errors?.join('\n'))
+    if (!DocumentV3.isDocumentV2(obj)) throw new ValidationError(DocumentV3.validate.errors?.slice()) // copy errors
     return new DocumentV3(obj)
   }
 
@@ -83,7 +84,7 @@ export class DocumentV2 implements OpenAPIV2.Document {
   }
 
   static async fromJson (obj: unknown) {
-    if (!DocumentV2.isDocumentV2(obj)) throw TypeError(DocumentV2.validate.errors?.join('\n'))
+    if (!DocumentV2.isDocumentV2(obj)) throw new ValidationError(DocumentV2.validate.errors?.slice()) // Copy errors
     return new DocumentV2(obj)
   }
 

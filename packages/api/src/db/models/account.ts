@@ -1,5 +1,6 @@
 import {ajv} from '../../util/ajv'
 import * as oas from '../../openapi.json'
+import {ValidationError} from '../../util/uapi'
 
 const validate = ajv.compile<AccountModel>(oas.components.schemas.account)
 
@@ -25,7 +26,7 @@ export class Account implements AccountModel {
   }
 
   static fromJson (obj: unknown, partial = false) {
-    if (!Account.isAccount(obj)) throw TypeError(validate.errors?.join('\n'))
+    if (!Account.isAccount(obj)) throw new ValidationError(validate.errors?.slice()) // Copy errors
     return new Account(obj)
   }
 

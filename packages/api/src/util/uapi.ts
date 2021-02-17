@@ -1,4 +1,5 @@
 import {UAPI} from '@byu-oit/uapi-ts'
+import {ErrorObject} from 'ajv'
 
 export enum HttpStatus {
   SUCCESS = 200,
@@ -27,7 +28,7 @@ export function getResponseForReturnCode(code: number): string {
   return ''
 }
 
-export function generateValidationResponseObj(code: number, message?: string, validation: string[] = []): UAPI.Metadata.Simple {
+export function generateValidationResponseObj(code: number, message?: string, validation?: string[] | null): UAPI.Metadata.Simple {
   if ([
     HttpStatus.SUCCESS,
     HttpStatus.CREATED,
@@ -43,11 +44,11 @@ export function generateValidationResponseObj(code: number, message?: string, va
   if (!message) message = getResponseForReturnCode(code)
   return {
     validation_response: {code, message},
-    ...validation.length && {validation_information: validation}
+    ...validation && {validation_information: validation}
   }
 }
 
-export function generateMetadataResponseObj(code: number, message?: string, validation: string[] = []): { metadata: UAPI.Metadata.Simple } {
+export function generateMetadataResponseObj(code: number, message?: string, validation?: string[] | null): { metadata: UAPI.Metadata.Simple } {
   return {metadata: generateValidationResponseObj(code, message, validation)}
 }
 
@@ -62,3 +63,17 @@ export function generateCollectionMetadataResponseObj(
     ...generateValidationResponseObj(code, message, validation)
   }
 }
+
+export class ValidationError extends Error {
+  errors?: string[] | null // AJV ErrorObject definition works perfectly with validation information handling
+  constructor(errors?: ErrorObject[] | null) {
+    super('Validation Error')
+    this.errors = errors?.reduce((messages, {message}) => {
+      if (message) messages.push(message)
+      return messages
+    }, [] as string[])
+    Object.setPrototypeOf(this, ValidationError.prototype);
+  }
+}
+
+

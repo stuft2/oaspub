@@ -1,7 +1,7 @@
 import {Request, Response} from 'express'
 import {Db, MongoWriteConcernError} from 'mongodb'
 import {Account} from '../db/models'
-import {generateMetadataResponseObj, HttpStatus} from '../util/uapi'
+import {generateMetadataResponseObj, HttpStatus, ValidationError} from '../util/uapi'
 import debug from 'debug'
 
 const logger = debug('api:controller:account')
@@ -16,30 +16,21 @@ export = function (db: Db): Record<string, (req: Request, res: Response) => Prom
           ...new Account(result).toJson(),
           ...generateMetadataResponseObj(HttpStatus.CREATED)
         })
-      } catch (e) {
-        if (e instanceof TypeError) {
-          return res.status(HttpStatus.BAD_REQUEST).send(generateMetadataResponseObj(HttpStatus.BAD_REQUEST, undefined, e.message.split('\n')))
-        }
-        if (e instanceof MongoWriteConcernError) {
+      } catch (err) {
+        if (err instanceof MongoWriteConcernError) {
           return res.status(HttpStatus.CONFLICT).send(generateMetadataResponseObj(HttpStatus.CONFLICT, 'An account with that username or email already exists'))
         }
-        logger('An unexpected error occurred while processing the request: %O', e)
-        return res.status(HttpStatus.INTERNAL_ERROR).send(generateMetadataResponseObj(HttpStatus.INTERNAL_ERROR))
+        throw err
       }
     },
     async retrieve (req: Request, res: Response) {
-      try {
-        const _id = req.params.accountId
-        const account = await db.collection<Account>(Account.name).findOne({_id})
-        if (!account) return res.status(HttpStatus.NOT_FOUND).send(generateMetadataResponseObj(HttpStatus.NOT_FOUND))
-        return res.send({
-          ...new Account(account).toJson(),
-          ...generateMetadataResponseObj(HttpStatus.SUCCESS)
-        })
-      } catch (e) {
-        logger('An unexpected error occurred while processing the request: %O', e)
-        return res.status(HttpStatus.INTERNAL_ERROR).send(generateMetadataResponseObj(HttpStatus.INTERNAL_ERROR))
-      }
+      const _id = req.params.accountId
+      const account = await db.collection<Account>(Account.name).findOne({_id})
+      if (!account) return res.status(HttpStatus.NOT_FOUND).send(generateMetadataResponseObj(HttpStatus.NOT_FOUND))
+      return res.send({
+        ...new Account(account).toJson(),
+        ...generateMetadataResponseObj(HttpStatus.SUCCESS)
+      })
     },
     async update (req: Request, res: Response) {
       try {
@@ -51,20 +42,17 @@ export = function (db: Db): Record<string, (req: Request, res: Response) => Prom
           ...new Account(value).toJson(),
           ...generateMetadataResponseObj(HttpStatus.SUCCESS)
         })
-      } catch (e) {
-        logger('An unexpected error occurred while processing the request: %O', e)
-        return res.status(HttpStatus.INTERNAL_ERROR).send(generateMetadataResponseObj(HttpStatus.INTERNAL_ERROR))
+      } catch (err) {
+        if (err instanceof MongoWriteConcernError) {
+          return res.status(HttpStatus.CONFLICT).send(generateMetadataResponseObj(HttpStatus.CONFLICT, 'An account with that username or email already exists'))
+        }
+        throw err
       }
     },
     async deactivate (req: Request, res: Response) {
-      try {
-        const _id = req.params.accountId
-        await db.collection<Account>(Account.name).findOneAndDelete({_id})
-        return res.status(HttpStatus.NO_CONTENT).send()
-      } catch (e) {
-        logger('An unexpected error occurred while processing the request: %O', e)
-        return res.status(HttpStatus.INTERNAL_ERROR).send(generateMetadataResponseObj(HttpStatus.INTERNAL_ERROR))
-      }
+      const _id = req.params.accountId
+      await db.collection<Account>(Account.name).findOneAndDelete({_id})
+      return res.status(HttpStatus.NO_CONTENT).send()
     }
   }
 }

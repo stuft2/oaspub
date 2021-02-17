@@ -1,17 +1,28 @@
 import {Request, Response, NextFunction} from 'express'
 import debug from 'debug'
-import {generateMetadataResponseObj, HttpStatus} from '../util/uapi'
+import get from 'lodash.get'
+import {generateMetadataResponseObj, HttpStatus, ValidationError} from '../util/uapi'
+import {MongoWriteConcernError} from "mongodb"
 
 const logger = debug('api:enforcer')
 
-// TODO - Add better type definitions when openapi enforcer adds them
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function EnforcerError (err: Error & { exception: { header: string } }, req: Request, res: Response, next: NextFunction): void {
-  if (err && err.exception && err.exception.header === 'Request has one or more errors') {
-    res.status(HttpStatus.BAD_REQUEST).send(generateMetadataResponseObj(HttpStatus.BAD_REQUEST, undefined, err.message.split('\n')))
-    return next()
+interface EnforcerException extends Error {
+  exception: {
+    header: string
   }
-  logger('%O', err.stack)
-  res.status(HttpStatus.INTERNAL_ERROR).send(generateMetadataResponseObj(HttpStatus.INTERNAL_ERROR))
-  return next()
+}
+
+function isEnforcerValidationException (value: unknown): value is EnforcerException {
+  return get(value, 'exception.header') === 'Request has one or more errors'
+}
+
+export function EnforcerError (err: Error, req: Request, res: Response, next: NextFunction): unknown {
+  if (isEnforcerValidationException(err)) {
+    return res.status(HttpStatus.BAD_REQUEST).send(generateMetadataResponseObj(HttpStatus.BAD_REQUEST, undefined, err.message.split('\n')))
+  }
+  if (err instanceof ValidationError) {
+    return res.status(HttpStatus.BAD_REQUEST).send(generateMetadataResponseObj(HttpStatus.BAD_REQUEST, undefined, err.errors))
+  }
+  logger('An unexpected error occurred while processing the request: %O', err)
+  return res.status(HttpStatus.INTERNAL_ERROR).send(generateMetadataResponseObj(HttpStatus.INTERNAL_ERROR))
 }
