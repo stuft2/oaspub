@@ -1,10 +1,9 @@
-import * as oas from '../../openapi.json'
-import {ajv} from '../../util/ajv'
 import {ValidationError} from '../../util/uapi'
-
-const validate = ajv.compile<TokenModel>(oas.components.schemas.token)
+import {Db} from 'mongodb'
+import {Debugger} from 'debug'
 
 export interface TokenModel {
+  _id: string
   description: string
   lastUsed: LastUsed
   token?: string
@@ -15,26 +14,25 @@ export interface LastUsed {
   dateTime: Date
 }
 
-export class Token implements TokenModel {
-  description: string
-  lastUsed: {
-    location: string
-    dateTime: Date
-  }
-  token?: string
+export class Token {
+  data: TokenModel
 
-  constructor(obj: TokenModel) {
-    this.description = obj.description
-    this.lastUsed = obj.lastUsed
-    if (obj.token) this.token = obj.token
+  constructor(token: TokenModel) {
+    this.data = token
   }
 
-  static fromJson (obj: unknown) {
-    if (!Token.isAccount(obj)) throw new ValidationError(validate.errors?.slice()) // Copy errors
-    return new Token(obj)
-  }
+  static async initialize (db: Db, logger: Debugger) {
+    // Ensure collection exists
+    const collectionName = Token.name
+    const collections = await db.collections()
+    if (collections.some(collection => collection.collectionName === collectionName)) {
+      logger('Collection %s already exists', collectionName)
+      return
+    }
+    await db.createCollection(collectionName)
+    logger('Created collection %s', collectionName)
 
-  static isAccount (value: unknown): value is TokenModel {
-    return validate(value)
+    // Ensure indexes exist
+    logger('No indexes to create for collection %s', collectionName)
   }
 }

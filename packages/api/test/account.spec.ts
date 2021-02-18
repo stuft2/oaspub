@@ -1,11 +1,16 @@
 import 'mocha'
-import {expect} from 'chai'
+import chai = require('chai')
+import chaiAsPromised = require('chai-as-promised')
 import * as sinon from 'sinon'
 import AccountControllers = require('../src/controllers/account')
-import {Db, MongoWriteConcernError} from 'mongodb'
+import {Db, MongoError} from 'mongodb'
 import {SinonStubbedInstance} from 'sinon'
 import {Request, Response} from 'express'
 import {HttpStatus} from "../src/util/uapi"
+import {AccountModel} from "../src/db/models"
+
+chai.use(chaiAsPromised)
+const {expect} = chai
 
 describe('Account Controllers', () => {
   let req: any
@@ -23,11 +28,23 @@ describe('Account Controllers', () => {
   })
 
   describe('Creating an account', () => {
+    beforeEach(() => {
+      req.body = {
+        username: 'john.doe',
+        email: 'john.doe@example.com',
+        password: 'fakePassword'
+      }
+    })
     it('should create a new account', async () => {
-      const dbResult = {
+      const dbResult: AccountModel = {
+        _id: '',
         username: '',
         email: '',
-        password: ''
+        password: {
+          value: '',
+          _salt: ''
+        },
+        active: true
       }
       const insertOne = sinon.stub().returns({ ops: [dbResult]})
       db.collection.returns({insertOne} as any)
@@ -48,7 +65,8 @@ describe('Account Controllers', () => {
       expect(responseBody).to.have.property('metadata')
     })
     it('should not create an account that already exists', async () => {
-      const insertOne = sinon.stub().throws(new MongoWriteConcernError('Error about a duplicate'))
+
+      const insertOne = sinon.stub().throws(new MongoError('Error about a duplicate'))
       db.collection.returns({insertOne} as any)
 
       await controllers.create(req, res)
@@ -70,20 +88,12 @@ describe('Account Controllers', () => {
       const insertOne = sinon.stub().throws(Error('Unexpected Error'))
       db.collection.returns({insertOne} as any)
 
-      await controllers.create(req, res)
-      const [statusCode] = res.status.getCall(0).args
-      const [responseBody] = res.send.getCall(0).args
+      // Check that unexpected errors still throw (will be caught by error middleware)
+      expect(controllers.create(req, res)).to.eventually.be.rejectedWith(Error)
 
       // check logic flow
       expect(db.collection.calledOnce).to.equal(true)
       expect(insertOne.calledOnce).to.equal(true)
-
-      // check actual results
-      expect(statusCode).to.equal(HttpStatus.INTERNAL_ERROR)
-      expect(responseBody).to.not.have.property('username')
-      expect(responseBody).to.not.have.property('email')
-      expect(responseBody).to.not.have.property('password')
-      expect(responseBody).to.have.property('metadata')
     })
   })
 })

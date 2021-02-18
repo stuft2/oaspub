@@ -4,7 +4,7 @@ import get from 'lodash.get'
 import {generateMetadataResponseObj, HttpStatus, ValidationError} from '../util/uapi'
 import {MongoWriteConcernError} from "mongodb"
 
-const logger = debug('api:enforcer')
+const logger = debug('api:server')
 
 interface EnforcerException extends Error {
   exception: {

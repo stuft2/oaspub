@@ -76,11 +76,11 @@
         }
       }
     },
-    "/accounts/{accountId}": {
+    "/accounts/{username}": {
       "x-controller": "account",
       "parameters": [
         {
-          "$ref": "#/components/parameters/accountId"
+          "$ref": "#/components/parameters/username"
         }
       ],
       "get": {
@@ -824,14 +824,14 @@
         }
       }
     },
-    "/document/{documentId}/maintainers/{accountId}": {
+    "/document/{documentId}/maintainers/{username}": {
       "x-controller": "maintainer",
       "parameters": [
         {
           "$ref": "#/components/parameters/documentId"
         },
         {
-          "$ref": "#/components/parameters/accountId"
+          "$ref": "#/components/parameters/username"
         }
       ],
       "put": {
@@ -1020,10 +1020,6 @@
         "description": "The information requisite for providing services for an entity. The username is necessary for assisting clients in looking up other accounts. The email may be used to login but it's primary function is for sending business communications to the entity.",
         "type": "object",
         "properties": {
-          "_id": {
-            "type": "string",
-            "readOnly": true
-          },
           "username": {
             "type": "string"
           },
@@ -1086,7 +1082,7 @@
         "description": "A maintainer may be granted privileges for a specific document. Admin privileges indicate that the account can modify metadata associated with the document and deprecate the document.",
         "type": "object",
         "properties": {
-          "accountId": {
+          "username": {
             "type": "string",
             "writeOnly": true
           },
@@ -1176,8 +1172,8 @@
       }
     },
     "parameters": {
-      "accountId": {
-        "name": "accountId",
+      "username": {
+        "name": "username",
         "description": "The username of the account",
         "in": "path",
         "required": true,

@@ -3,7 +3,7 @@ FROM node:15.8.0
 ARG port
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json*", "./"]
+COPY ["package.json", "./"]
 RUN npm install --production
 COPY dist /app/dist
 

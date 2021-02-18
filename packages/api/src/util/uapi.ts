@@ -69,8 +69,7 @@ export class ValidationError extends Error {
   constructor(errors?: ErrorObject[] | null) {
     super('Validation Error')
     this.errors = errors?.reduce((messages, {message}) => {
-      if (message) messages.push(message)
-      return messages
+      return message ? messages.concat(message) : messages
     }, [] as string[])
     Object.setPrototypeOf(this, ValidationError.prototype);
   }
