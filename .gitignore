@@ -9,3 +9,6 @@ dist
 
 #ESLint
 .eslintcache
+
+# Tests & Coverage
+.nyc_output
