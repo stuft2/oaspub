@@ -17,7 +17,7 @@ export = function (db: Db): Record<string, (req: Request, res: Response) => Prom
           ...generateMetadataResponseObj(HttpStatus.CREATED)
         })
       } catch (err) {
-        if (err instanceof MongoError) { // TODO - check mongo error for uniqueness violation
+        if (err instanceof MongoError && err.code === 11000) { // Duplicate Key Error
           return res.status(HttpStatus.CONFLICT).send(generateMetadataResponseObj(HttpStatus.CONFLICT, 'An account with that username or email already exists'))
         }
         throw err
@@ -42,7 +42,7 @@ export = function (db: Db): Record<string, (req: Request, res: Response) => Prom
           ...generateMetadataResponseObj(HttpStatus.SUCCESS)
         })
       } catch (err) {
-        if (err instanceof MongoError) { // TODO - check mongo error for uniqueness violation
+        if (err instanceof MongoError && err.code === 11000) { // Duplicate Key Error
           return res.status(HttpStatus.CONFLICT).send(generateMetadataResponseObj(HttpStatus.CONFLICT, 'An account with that username or email already exists'))
         }
         throw err
