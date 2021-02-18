@@ -11,7 +11,7 @@ export = function (db: Db): Record<string, (req: Request, res: Response) => Prom
     async create (req: Request, res: Response) {
       try {
         const account = await Account.create(db, req.body)
-        res.setHeader('location', `${server.host}/accounts/${account.data.username}`)
+        res.setHeader('location', `${server.host}/accounts/${account.data.username}`) // TODO - Ensure that username doesn't have special characters
         return res.status(HttpStatus.CREATED).send({
           ...account.readable(),
           ...generateMetadataResponseObj(HttpStatus.CREATED)

@@ -19,6 +19,8 @@ describe('Account Controllers', () => {
   let db: SinonStubbedInstance<Db>
   let controllers: Record<string, (req: Request, res: Response) => Promise<unknown>>
   let dbResult: AccountModel
+  const DuplicateKey = new MongoError('Error about a duplicate')
+  DuplicateKey.code = 11000
 
   beforeEach(() => {
     req = {params: {}, body: {}}
@@ -29,12 +31,12 @@ describe('Account Controllers', () => {
     db = sinon.createStubInstance(Db)
     controllers = AccountControllers(db as any)
     dbResult = {
-      _id: '',
-      username: '',
-      email: '',
+      _id: 'uuid',
+      username: 'example',
+      email: 'example@example.com',
       password: {
-        value: '',
-        _salt: ''
+        value: 'asdfasdf',
+        _salt: 'asdfasdf'
       },
       active: true
     }
@@ -64,14 +66,14 @@ describe('Account Controllers', () => {
       // check actual results
       expect(statusCode).to.equal(HttpStatus.CREATED)
       expect(header).to.equal('location')
-      expect(new URL(value)).to.not.throw(TypeError)
+      expect(() => new URL(value)).to.not.throw(TypeError)
       expect(responseBody).to.have.property('username')
       expect(responseBody).to.have.property('email')
       expect(responseBody).to.not.have.property('password')
       expect(responseBody).to.have.property('metadata')
     })
     it('should not create an account that already exists', async () => {
-      const insertOne = sinon.stub().rejects(new MongoError('Error about a duplicate'))
+      const insertOne = sinon.stub().rejects(DuplicateKey)
       db.collection.returns({insertOne} as any)
 
       await controllers.create(req, res)
@@ -174,7 +176,7 @@ describe('Account Controllers', () => {
       expect(responseBody.metadata.validation_response.code).to.equal(HttpStatus.SUCCESS)
     })
     it('should not update an account username or email that already exists', async () => {
-      const findOneAndUpdate = sinon.stub().rejects(new MongoError('Error about a duplicate'))
+      const findOneAndUpdate = sinon.stub().rejects(DuplicateKey)
       db.collection.returns({findOneAndUpdate} as any)
 
       await controllers.update(req, res)
