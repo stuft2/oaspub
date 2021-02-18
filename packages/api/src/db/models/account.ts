@@ -88,7 +88,7 @@ export class Account {
       const encrypted = Account.encryptPassword(password)
       updates = {...updates, ...encrypted}
     }
-    const result = await Account.collection(db).findOneAndUpdate({username}, { $set: updates })
+    const result = await Account.collection(db).findOneAndUpdate({username, active: true}, { $set: updates })
     return result.value ? new Account(result.value) : null
   }
 
