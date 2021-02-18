@@ -5,6 +5,7 @@ import Enforcer from 'openapi-enforcer-middleware'
 import * as env from './util/env'
 import * as db from './db/connection'
 import {EnforcerError} from './middleware/openapi-error'
+import {Logger} from "./middleware/logger"
 
 const logger = debug('api:server')
 
@@ -22,13 +23,7 @@ export default async function server(): Promise<Express> {
     app.use(express.json())
 
     // Log all requests to the server
-    app.use((req, res, next) => {
-      const now = new Date()
-      logger(`${req.method} called on ${req.originalUrl}`)
-      logger('Query:', req.query)
-      // logger('Body:', JSON.stringify(req.body)) // body could contain sensitive data
-      next()
-    })
+    app.use(Logger)
 
     // Set up server paths using api definition document
     const controllerDir = path.resolve(__dirname, 'controllers')
