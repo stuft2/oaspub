@@ -2,7 +2,6 @@ import {Request, Response, NextFunction} from 'express'
 import debug from 'debug'
 import get from 'lodash.get'
 import {generateMetadataResponseObj, HttpStatus, ValidationError} from '../util/uapi'
-import {MongoWriteConcernError} from "mongodb"
 
 const logger = debug('api:server')
 

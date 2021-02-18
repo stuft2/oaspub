@@ -1,4 +1,4 @@
-import {NextFunction, Request, Response} from "express"
+import {NextFunction, Request, Response} from 'express'
 import debug from 'debug'
 
 const logger = debug('api:server')

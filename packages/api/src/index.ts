@@ -5,7 +5,7 @@ import Enforcer from 'openapi-enforcer-middleware'
 import * as env from './util/env'
 import * as db from './db/connection'
 import {EnforcerError} from './middleware/openapi-error'
-import {Logger} from "./middleware/logger"
+import {Logger} from './middleware/logger'
 
 const logger = debug('api:server')
 
