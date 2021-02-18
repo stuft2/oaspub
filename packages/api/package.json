@@ -14,7 +14,7 @@
     "dev": "ts-node src/index.ts --project tsconfig.json",
     "lint": "eslint . --ext .ts,.tsx",
     "start": "node dist/index.js",
-    "test": "mocha -r ts-node/register -r source-map-support/register test/**/*.spec.ts"
+    "test": "mocha -r ts-node/register -r source-map-support/register test/unit/**/*.spec.ts"
   },
   "repository": {
     "type": "git",
