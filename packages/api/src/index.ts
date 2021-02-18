@@ -1,5 +1,5 @@
 import path from 'path'
-import express, {Request, Response} from 'express'
+import express, {Express, Request, Response} from 'express'
 import debug from 'debug'
 import Enforcer from 'openapi-enforcer-middleware'
 import * as env from './util/env'
@@ -8,10 +8,7 @@ import {EnforcerError} from './middleware/openapi-error'
 
 const logger = debug('api:server')
 
-const {server} = env.get()
-
-;(async (): Promise<void> => {
-  try {
+export default async function server(): Promise<Express> {
     // Connect to and initialize database
     const database = await db.initialize()
 
@@ -56,12 +53,22 @@ const {server} = env.get()
     // Enforcer error handling middleware
     app.use(EnforcerError)
 
-    // Start server
-    app.listen(server.port, () => {
-      logger(`Server started on port ${server.port}`)
-    })
-  } catch (e) {
-    logger('Error starting server:', e)
-    process.exit(1)
-  }
-})()
+    return app
+}
+
+// Start standalone server if directly running
+if (require.main === module) {
+  (async () => {
+    try {
+      const config = env.get()
+      const app = await server()
+      // Start server
+      app.listen(config.server.port, () => {
+        logger(`Server started on port ${config.server.port}`)
+      })
+    } catch (e) {
+      logger('Error starting server:', e)
+      process.exit(1)
+    }
+  })()
+}
