@@ -19,14 +19,8 @@ services:
       - ${PORT}:${PORT}
     depends_on:
       - mongo
-    environment:
-      DEBUG: ${DEBUG}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_DATABASE_NAME: ${DB_DATABASE_NAME}
-      DB_ADDRESS: mongo # use service name only in docker compose
-      DB_PORT: ${DB_PORT}
-      PORT: ${PORT}
+    env_file:
+      - .env
   admin:
     image: mongo-express
     ports:

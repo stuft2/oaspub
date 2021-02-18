@@ -24,9 +24,9 @@ export default async function server(): Promise<Express> {
     // Log all requests to the server
     app.use((req, res, next) => {
       const now = new Date()
-      logger(`${req.method} called on ${req.originalUrl} at ${now.toLocaleTimeString('en-US', { timeZone: 'America/Denver', timeZoneName: 'short', weekday: 'short', month: 'short', day: 'numeric' })} (${now.toISOString()})`)
+      logger(`${req.method} called on ${req.originalUrl}`)
       logger('Query:', req.query)
-      logger('Body:', JSON.stringify(req.body))
+      // logger('Body:', JSON.stringify(req.body)) // body could contain sensitive data
       next()
     })
 

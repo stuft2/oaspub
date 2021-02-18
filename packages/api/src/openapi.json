@@ -70,6 +70,9 @@
           "403": {
             "$ref": "#/components/responses/403"
           },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
           "500": {
             "$ref": "#/components/responses/500"
           }
@@ -116,6 +119,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
           "401": {
             "$ref": "#/components/responses/401"
           },
@@ -130,7 +136,7 @@
           }
         }
       },
-      "put": {
+      "patch": {
         "summary": "update account information",
         "description": "Updates the fields in the account information that are provided",
         "operationId": "updateAccountInfo",
@@ -173,6 +179,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
           "401": {
             "$ref": "#/components/responses/401"
           },
@@ -180,7 +189,10 @@
             "$ref": "#/components/responses/403"
           },
           "404": {
-            "$ref": "#/components/responses/400"
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
           },
           "500": {
             "$ref": "#/components/responses/500"
@@ -834,7 +846,7 @@
           "$ref": "#/components/parameters/username"
         }
       ],
-      "put": {
+      "patch": {
         "summary": "acknowledge maintainer invite",
         "description": "Accept or deny an invite to assume a role for the specified OpenAPI document.",
         "operationId": "acknowledgeMaintainerInvite",
@@ -1144,6 +1156,16 @@
       },
       "404": {
         "description": "the resource was not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/simple_metadata"
+            }
+          }
+        }
+      },
+      "409": {
+        "description": "there was a conflict and the request could not be completed",
         "content": {
           "application/json": {
             "schema": {

@@ -2,12 +2,16 @@ import {Request, Response} from 'express'
 import {Db, MongoError} from 'mongodb'
 import {Account} from '../db/models'
 import {generateMetadataResponseObj, HttpStatus} from '../util/uapi'
+import * as env from '../util/env'
+
+const {server} = env.get()
 
 export = function (db: Db): Record<string, (req: Request, res: Response) => Promise<unknown>> {
   return {
     async create (req: Request, res: Response) {
       try {
         const account = await Account.create(db, req.body)
+        res.setHeader('location', `${server.host}/accounts/${account.data.username}`)
         return res.status(HttpStatus.CREATED).send({
           ...account.readable(),
           ...generateMetadataResponseObj(HttpStatus.CREATED)

@@ -1,0 +1,392 @@
+{
+	"info": {
+		"_postman_id": "0a4a24c4-2a9e-478a-bd09-d7110f4ebd0c",
+		"name": "Open API Specification Publisher Accounts",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const count = pm.environment.get('count')",
+							"const username = pm.environment.get('username')",
+							"const email = `${username}${count}@example.com`",
+							"pm.test('Successfully create a new account', () => {",
+							"    pm.response.to.have.status(201)",
+							"    const body = pm.response.json()",
+							"    pm.expect(body.metadata).to.exist",
+							"    pm.expect(body.metadata.validation_response.code).to.equal(201)",
+							"    pm.expect(body.username).to.equal(username + count)",
+							"    pm.expect(body.email).to.equal(email)",
+							"    pm.expect(body._id).to.not.exist",
+							"    pm.expect(body.password).to.not.exist",
+							"    pm.expect(body.active).to.not.exist",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let count = pm.environment.get('count')",
+							"if (count === undefined) count = 0",
+							"pm.environment.set('count', parseInt(count) + 1)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{username}}{{count}}\",\n    \"email\": \"{{username}}{{count}}@example.com\",\n    \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/accounts",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cannot duplicate an existing account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Cannot duplicate an existing account', () => {",
+							"    pm.response.to.have.status(409)",
+							"    const body = pm.response.json()",
+							"    pm.expect(body.metadata).to.exist",
+							"    pm.expect(body.metadata.validation_response.code).to.equal(409)",
+							"    pm.expect(body.username).to.not.exist",
+							"    pm.expect(body.email).to.not.exist",
+							"    pm.expect(body._id).to.not.exist",
+							"    pm.expect(body.password).to.not.exist",
+							"    pm.expect(body.active).to.not.exist",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{username}}{{count}}\",\n    \"email\": \"{{username}}{{count}}@example.com\",\n    \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/accounts",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch account information",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const count = pm.environment.get('count')",
+							"const username = pm.environment.get('username')",
+							"const email = `${username}${count}@example.com`",
+							"pm.test('Fetch an active account', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const body = pm.response.json()",
+							"    pm.expect(body.metadata).to.exist",
+							"    pm.expect(body.metadata.validation_response.code).to.equal(200)",
+							"    pm.expect(body.username).to.equal(username + count)",
+							"    pm.expect(body.email).to.equal(email)",
+							"    pm.expect(body._id).to.not.exist",
+							"    pm.expect(body.password).to.not.exist",
+							"    pm.expect(body.active).to.not.exist",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/accounts/{{username}}{{count}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"accounts",
+						"{{username}}{{count}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change username & email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const count = pm.environment.get('count')",
+							"const username = pm.environment.get('username')",
+							"const email = `${username}${count}@example.com`",
+							"pm.test('Change username & email', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const body = pm.response.json()",
+							"    pm.expect(body.metadata).to.exist",
+							"    pm.expect(body.metadata.validation_response.code).to.equal(200)",
+							"    pm.expect(body.username).to.equal(username + count)",
+							"    pm.expect(body.email).to.equal(email)",
+							"    pm.expect(body._id).to.not.exist",
+							"    pm.expect(body.password).to.not.exist",
+							"    pm.expect(body.active).to.not.exist",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const count = pm.environment.get('count')",
+							"const oldusername = pm.environment.get('username')",
+							"pm.environment.set('oldusername', oldusername + count)",
+							"pm.environment.set('count', parseInt(count) + 1)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{username}}{{count}}\",\n    \"email\": \"{{username}}{{count}}@example.com\",\n    \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/accounts/{{oldusername}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"accounts",
+						"{{oldusername}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cannot fetch moved account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Cannot fetch moved account', () => {",
+							"    pm.response.to.have.status(404)",
+							"    const body = pm.response.json()",
+							"    pm.expect(body.metadata).to.exist",
+							"    pm.expect(body.metadata.validation_response.code).to.equal(404)",
+							"    pm.expect(body.username).to.not.exist",
+							"    pm.expect(body.email).to.not.exist",
+							"    pm.expect(body._id).to.not.exist",
+							"    pm.expect(body.password).to.not.exist",
+							"    pm.expect(body.active).to.not.exist",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/accounts/{{oldusername}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"accounts",
+						"{{oldusername}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update account password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const count = pm.environment.get('count')",
+							"const username = pm.environment.get('username')",
+							"const email = `${username}${count}@example.com`",
+							"pm.test('Update account password', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const body = pm.response.json()",
+							"    pm.expect(body.metadata).to.exist",
+							"    pm.expect(body.metadata.validation_response.code).to.equal(200)",
+							"    pm.expect(body.username).to.equal(username + count)",
+							"    pm.expect(body.email).to.equal(email)",
+							"    pm.expect(body._id).to.not.exist",
+							"    pm.expect(body.password).to.not.exist",
+							"    pm.expect(body.active).to.not.exist",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"password\": \"{{password}}{{count}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/accounts/{{username}}{{count}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"accounts",
+						"{{username}}{{count}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deactivate account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Deactivate account', () => {",
+							"    pm.response.to.have.status(204)",
+							"    pm.expect(pm.response.body).to.equal(undefined)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/accounts/{{username}}{{count}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"accounts",
+						"{{username}}{{count}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cannot fetch deactivated account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Cannot fetch a deactivated account', () => {",
+							"    pm.response.to.have.status(404)",
+							"    const body = pm.response.json()",
+							"    pm.expect(body.metadata).to.exist",
+							"    pm.expect(body.metadata.validation_response.code).to.equal(404)",
+							"    pm.expect(body.username).to.not.exist",
+							"    pm.expect(body.email).to.not.exist",
+							"    pm.expect(body._id).to.not.exist",
+							"    pm.expect(body.password).to.not.exist",
+							"    pm.expect(body.active).to.not.exist",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/accounts/{{username}}{{count}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"accounts",
+						"{{username}}{{count}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

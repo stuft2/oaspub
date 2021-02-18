@@ -59,8 +59,8 @@ export class Account {
     logger('Created indexes for collection %s', collectionName)
   }
 
-  readable (): Omit<AccountModel, '_id' | '_salt' | 'password'> {
-    const {_id, password, ...readable} = this.data
+  readable (): Omit<AccountModel, '_id' | '_salt' | 'password' | 'active'> {
+    const {_id, password, active, ...readable} = this.data
     return readable
   }
 
@@ -88,7 +88,7 @@ export class Account {
       const encrypted = Account.encryptPassword(password)
       updates = {...updates, ...encrypted}
     }
-    const result = await Account.collection(db).findOneAndUpdate({username, active: true}, { $set: updates })
+    const result = await Account.collection(db).findOneAndUpdate({username, active: true}, { $set: updates }, {returnOriginal: false})
     return result.value ? new Account(result.value) : null
   }
 

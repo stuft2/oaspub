@@ -9,6 +9,7 @@ export interface EnvConfiguration {
     database: string
   }
   server: {
+    host: string
     port: number
   }
 }
@@ -26,6 +27,7 @@ export function get (): EnvConfiguration {
         database: env.get('DB_DATABASE_NAME').required().asString()
       },
       server: {
+        host: env.get('HOST').required().asString(),
         port: env.get('PORT').default(8080).asPortNumber()
       }
     }

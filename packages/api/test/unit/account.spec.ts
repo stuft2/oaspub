@@ -1,4 +1,5 @@
 import 'mocha'
+import {URL} from 'url'
 import chai = require('chai')
 import chaiAsPromised = require('chai-as-promised')
 import * as sinon from 'sinon'
@@ -23,7 +24,8 @@ describe('Account Controllers', () => {
     req = {params: {}, body: {}}
     const send = sinon.stub()
     const status = sinon.stub().returns({send})
-    res = {status, send}
+    const setHeader = sinon.stub()
+    res = {status, send, setHeader}
     db = sinon.createStubInstance(Db)
     controllers = AccountControllers(db as any)
     dbResult = {
@@ -52,6 +54,7 @@ describe('Account Controllers', () => {
 
       await controllers.create(req, res)
       const [statusCode] = res.status.getCall(0).args
+      const [header, value] = res.setHeader.getCall(0).args
       const [responseBody] = res.send.getCall(0).args
 
       // check logic flow
@@ -60,6 +63,8 @@ describe('Account Controllers', () => {
 
       // check actual results
       expect(statusCode).to.equal(HttpStatus.CREATED)
+      expect(header).to.equal('location')
+      expect(new URL(value)).to.not.throw(TypeError)
       expect(responseBody).to.have.property('username')
       expect(responseBody).to.have.property('email')
       expect(responseBody).to.not.have.property('password')
