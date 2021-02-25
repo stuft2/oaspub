@@ -7,8 +7,9 @@ import AccountControllers = require('../../src/controllers/account')
 import {Db, MongoError} from 'mongodb'
 import {SinonStubbedInstance} from 'sinon'
 import {Request, Response} from 'express'
-import {HttpStatus} from "../../src/util/uapi"
-import {AccountModel} from "../../src/db/models"
+import {HttpStatus} from '../../src/util/uapi'
+import {AccountModel} from '../../src/db/models'
+import {EnvConfiguration} from '../../src/util/env'
 
 chai.use(chaiAsPromised)
 const {expect} = chai
@@ -22,6 +23,20 @@ describe('Account Controllers', () => {
   const DuplicateKey = new MongoError('Error about a duplicate')
   DuplicateKey.code = 11000
 
+  const env: EnvConfiguration = {
+    db: {
+      host: 'http://db.example.com',
+      port: 27017,
+      username: 'admin',
+      password: 'changeme',
+      database: 'document'
+    },
+    server: {
+      port: 8080,
+      host: 'http://example.com'
+    }
+  }
+
   beforeEach(() => {
     req = {params: {}, body: {}}
     const send = sinon.stub()
@@ -29,7 +44,7 @@ describe('Account Controllers', () => {
     const setHeader = sinon.stub()
     res = {status, send, setHeader}
     db = sinon.createStubInstance(Db)
-    controllers = AccountControllers(db as any)
+    controllers = AccountControllers(env, db as any)
     dbResult = {
       _id: 'uuid',
       username: 'example',

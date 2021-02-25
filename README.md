@@ -1,6 +1,6 @@
 <img align="right" src=media/logo-inverted.png height="150px">
 
-# [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification/) Manager
+# [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification/) Publisher
 
 ### Problem
 
@@ -22,10 +22,11 @@ recall of specific versions of a JSON schema found in an OAS document.
 
 ### Packages
 
-1. A web server that validates and manages OAS documents and provides a
+1. [Publisher API](./packages/api/README.md): A web server that validates and manages OAS documents and provides a
    historical lookup of schemas.
-2. A frontend portal for discovering and visualizing OAS documents and
+2. [Publisher Client](./packages/client/README.md): A browser portal for discovering and visualizing OAS documents and
    their change history.
+3. [Publisher CLI](./packages/cli/README.md): A command line tool for publishing and managing OAS documents.
 
 ### Contributions
 

@@ -39,8 +39,8 @@ export default async function server(): Promise<Express> {
     })
     await enforcer.promise // Wait for enforcer to resolve OAS doc
 
-    // Set up controllers, use dependency injection to pass through database connection
-    await enforcer.controllers(controllerDir, database)
+    // Set up controllers, use dependency injection to pass through database connection and environment variables
+    await enforcer.controllers(controllerDir, env.get(), database)
 
     // Plugin enforcer middleware to Express
     app.use(enforcer.middleware())

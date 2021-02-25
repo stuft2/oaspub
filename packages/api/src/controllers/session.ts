@@ -1,10 +1,10 @@
-import {Request, Response} from 'express'
-import {Db} from 'mongodb'
+import {Controllers} from './controller'
 
-export = function (db: Db): Record<string, (req: Request, res: Response) => Promise<unknown>> {
+const controllers: Controllers = function (env, db) {
   return {
-    async create (req: Request, res: Response) {
+    async create (req, res) {
 
     }
   }
 }
+export = controllers
