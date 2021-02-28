@@ -11,6 +11,7 @@ export interface EnvConfiguration {
   server: {
     host: string
     port: number
+    privateKey: string
   }
 }
 
@@ -28,7 +29,8 @@ export function get (): EnvConfiguration {
       },
       server: {
         host: env.get('HOST').required().asString(),
-        port: env.get('PORT').default(8080).asPortNumber()
+        port: env.get('PORT').default(8080).asPortNumber(),
+        privateKey: env.get('PRIVATE_KEY').required().asString()
       }
     }
   }

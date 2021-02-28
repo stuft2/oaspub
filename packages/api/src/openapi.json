@@ -1013,11 +1013,15 @@
         "description": "A session allows the web service to authenticate and identify an individual without the repeated use of their username/password combination.",
         "type": "object",
         "properties": {
-          "jwt": {
+          "token": {
             "type": "string",
             "readOnly": true
           },
           "username": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "email": {
             "type": "string",
             "writeOnly": true
           },

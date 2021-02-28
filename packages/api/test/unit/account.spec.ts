@@ -6,10 +6,11 @@ import * as sinon from 'sinon'
 import AccountControllers = require('../../src/controllers/account')
 import {Db, MongoError} from 'mongodb'
 import {SinonStubbedInstance} from 'sinon'
-import {Request, Response} from 'express'
 import {HttpStatus} from '../../src/util/uapi'
 import {AccountModel} from '../../src/db/models'
 import {EnvConfiguration} from '../../src/util/env'
+import {Middleware} from "../../src/middleware/middleware"
+import {NextFunction} from "express"
 
 chai.use(chaiAsPromised)
 const {expect} = chai
@@ -17,8 +18,9 @@ const {expect} = chai
 describe('Account Controllers', () => {
   let req: any
   let res: any
+  let next: NextFunction
   let db: SinonStubbedInstance<Db>
-  let controllers: Record<string, (req: Request, res: Response) => Promise<unknown>>
+  let controllers: Record<string, Middleware>
   let dbResult: AccountModel
   const DuplicateKey = new MongoError('Error about a duplicate')
   DuplicateKey.code = 11000
@@ -33,7 +35,8 @@ describe('Account Controllers', () => {
     },
     server: {
       port: 8080,
-      host: 'http://example.com'
+      host: 'http://example.com',
+      privateKey: 'private'
     }
   }
 
@@ -43,15 +46,16 @@ describe('Account Controllers', () => {
     const status = sinon.stub().returns({send})
     const setHeader = sinon.stub()
     res = {status, send, setHeader}
+    next = sinon.stub()
     db = sinon.createStubInstance(Db)
     controllers = AccountControllers(env, db as any)
     dbResult = {
       _id: 'uuid',
-      username: 'example',
-      email: 'example@example.com',
+      username: 'john.doe',
+      email: 'john.doe@example.com',
       password: {
-        value: 'asdfasdf',
-        _salt: 'asdfasdf'
+        value: 'fakePassword',
+        _salt: 'salty'
       },
       active: true
     }
@@ -67,15 +71,17 @@ describe('Account Controllers', () => {
     })
     it('should create a new account', async () => {
       const insertOne = sinon.stub().resolves({ ops: [dbResult]})
+      const findOne = sinon.stub().resolves(dbResult)
       db.collection.returns({insertOne} as any)
 
-      await controllers.create(req, res)
+      await controllers.create(req, res, next)
       const [statusCode] = res.status.getCall(0).args
       const [header, value] = res.setHeader.getCall(0).args
       const [responseBody] = res.send.getCall(0).args
 
       // check logic flow
-      expect(db.collection.calledOnce).to.equal(true)
+      expect(db.collection.calledTwice).to.equal(true)
+      expect(findOne.calledOnce).to.equal(true)
       expect(insertOne.calledOnce).to.equal(true)
 
       // check actual results
@@ -91,7 +97,7 @@ describe('Account Controllers', () => {
       const insertOne = sinon.stub().rejects(DuplicateKey)
       db.collection.returns({insertOne} as any)
 
-      await controllers.create(req, res)
+      await controllers.create(req, res, next)
       const [statusCode] = res.status.getCall(0).args
       const [responseBody] = res.send.getCall(0).args
 
@@ -109,7 +115,7 @@ describe('Account Controllers', () => {
     it('should throw other errors', async () => {
       const insertOne = sinon.stub().rejects(Error('Unexpected Error'))
       db.collection.returns({insertOne} as any)
-      expect(controllers.create(req, res)).to.eventually.be.rejectedWith(Error)
+      expect(controllers.create(req, res, next)).to.eventually.be.rejectedWith(Error)
 
       // check logic flow
       expect(db.collection.calledOnce).to.equal(true)
@@ -129,7 +135,7 @@ describe('Account Controllers', () => {
       const findOne = sinon.stub().resolves(dbResult)
       db.collection.returns({findOne} as any)
 
-      await controllers.retrieve(req, res)
+      await controllers.retrieve(req, res, next)
       const [responseBody] = res.send.getCall(0).args
 
       // check logic flow
@@ -148,7 +154,7 @@ describe('Account Controllers', () => {
       const findOne = sinon.stub().resolves(null)
       db.collection.returns({findOne} as any)
 
-      await controllers.retrieve(req, res)
+      await controllers.retrieve(req, res, next)
       const [statusCode] = res.status.getCall(0).args
       const [responseBody] = res.send.getCall(0).args
 
@@ -176,7 +182,7 @@ describe('Account Controllers', () => {
       const findOneAndUpdate = sinon.stub().resolves({value: dbResult})
       db.collection.returns({findOneAndUpdate} as any)
 
-      await controllers.update(req, res)
+      await controllers.update(req, res, next)
       const [responseBody] = res.send.getCall(0).args
 
       // check logic flow
@@ -194,7 +200,7 @@ describe('Account Controllers', () => {
       const findOneAndUpdate = sinon.stub().rejects(DuplicateKey)
       db.collection.returns({findOneAndUpdate} as any)
 
-      await controllers.update(req, res)
+      await controllers.update(req, res, next)
       const [statusCode] = res.status.getCall(0).args
       const [responseBody] = res.send.getCall(0).args
 
@@ -213,7 +219,7 @@ describe('Account Controllers', () => {
       const findOneAndUpdate = sinon.stub().resolves({})
       db.collection.returns({findOneAndUpdate} as any)
 
-      await controllers.update(req, res)
+      await controllers.update(req, res, next)
       const [responseBody] = res.send.getCall(0).args
 
       // check logic flow
@@ -230,7 +236,7 @@ describe('Account Controllers', () => {
     it('should throw other errors', async () => {
       const findOneAndUpdate = sinon.stub().rejects(Error('Unexpected Error'))
       db.collection.returns({findOneAndUpdate} as any)
-      expect(controllers.update(req, res)).to.eventually.be.rejectedWith(Error)
+      expect(controllers.update(req, res, next)).to.eventually.be.rejectedWith(Error)
 
       // check logic flow
       expect(db.collection.calledOnce).to.equal(true)
@@ -247,7 +253,7 @@ describe('Account Controllers', () => {
       const findOneAndUpdate = sinon.stub().resolves({value: dbResult})
       db.collection.returns({findOneAndUpdate} as any)
 
-      await controllers.deactivate(req, res)
+      await controllers.deactivate(req, res, next)
       const [statusCode] = res.status.getCall(0).args
       const [responseBody] = res.send.getCall(0).args
 

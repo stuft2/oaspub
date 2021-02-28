@@ -2,18 +2,7 @@ import {Db} from 'mongodb'
 import {Debugger} from 'debug'
 import { v4 as uuid } from 'uuid'
 import * as crypto from 'crypto'
-
-export type AccountCreateRequest = {
-  username: string
-  email: string
-  password: string
-}
-
-export type AccountUpdateRequest = {
-  username?: string
-  email?: string
-  password?: string
-}
+import {SessionPayload} from "./session"
 
 export interface AccountModel {
   _id: string
@@ -27,6 +16,16 @@ export interface Password {
   value: string
   _salt: string
 }
+
+export type AccountCreateRequest = {
+  username: string
+  email: string
+  password: string
+}
+
+export type AccountUpdateRequest = Partial<AccountCreateRequest>
+
+export type AccountResponse = Omit<AccountModel, '_id' | '_salt' | 'password' | 'active'>
 
 export class Account {
   data: AccountModel
@@ -59,26 +58,29 @@ export class Account {
     logger('Created indexes for collection %s', collectionName)
   }
 
-  readable (): Omit<AccountModel, '_id' | '_salt' | 'password' | 'active'> {
+  info (): Omit<AccountModel, '_id' | '_salt' | 'password' | 'active'> {
     const {_id, password, active, ...readable} = this.data
     return readable
   }
 
-  static encryptPassword (password: string): Pick<AccountModel, 'password'> {
-    const _salt = crypto.randomBytes(16).toString('hex')
-    password = crypto.pbkdf2Sync(password, _salt, 1000, 64, 'sha512').toString('hex')
-    return {
-      password: {
-        value: password,
-        _salt
-      }
-    }
+  claims (): Omit<SessionPayload, 'iss' | 'iat' | 'exp'> {
+    return { sub: this.data.username }
   }
 
-  static async create (db: Db, {password, ...account}: AccountCreateRequest): Promise<Account> {
+  verify (password: string): boolean {
+    return Account.encryptPassword(password, this.data.password._salt).value === password
+  }
+
+  static encryptPassword (password: string, salt?: string): Password {
+    const _salt = salt || crypto.randomBytes(16).toString('hex')
+    const value = crypto.pbkdf2Sync(password, _salt, 1000, 64, 'sha512').toString('hex')
+    return {value, _salt}
+  }
+
+  static async create (db: Db, {password: pwd, ...account}: AccountCreateRequest): Promise<Account> {
     const _id = uuid()
-    const encrypted = Account.encryptPassword(password)
-    const {ops: [result]} = await Account.collection(db).insertOne({...account, ...encrypted, _id, active: true})
+    const password = Account.encryptPassword(pwd)
+    const {ops: [result]} = await Account.collection(db).insertOne({...account, password, _id, active: true})
     return new Account(result)
   }
 
@@ -92,9 +94,9 @@ export class Account {
     return result.value ? new Account(result.value) : null
   }
 
-  static async fetch (db: Db, filters: Partial<Pick<AccountModel, '_id' | 'username' | 'email'>>): Promise<Account | null> {
-    const result = await Account.collection(db).findOne({...filters, active: true})
-    return result ? new Account(result) : result
+  static async fetch (db: Db, filters: Partial<Pick<AccountModel, '_id' | 'username' | 'email'>>, active: boolean | null = true): Promise<Account | null> {
+    const result = await Account.collection(db).findOne({...filters, ...active !== null && { active}})
+    return result ? new Account(result) : null
   }
 
   static async deactivate(db: Db, username: string): Promise<void> {
