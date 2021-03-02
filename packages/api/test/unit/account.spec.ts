@@ -71,7 +71,6 @@ describe('Account Controllers', () => {
     })
     it('should create a new account', async () => {
       const insertOne = sinon.stub().resolves({ ops: [dbResult]})
-      const findOne = sinon.stub().resolves(dbResult)
       db.collection.returns({insertOne} as any)
 
       await controllers.create(req, res, next)
@@ -80,8 +79,7 @@ describe('Account Controllers', () => {
       const [responseBody] = res.send.getCall(0).args
 
       // check logic flow
-      expect(db.collection.calledTwice).to.equal(true)
-      expect(findOne.calledOnce).to.equal(true)
+      expect(db.collection.calledOnce).to.equal(true)
       expect(insertOne.calledOnce).to.equal(true)
 
       // check actual results

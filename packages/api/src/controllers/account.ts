@@ -2,7 +2,15 @@ import {MongoError} from 'mongodb'
 import {Controllers} from './controller'
 import {Account} from '../db/models'
 import {generateMetadataResponseObj, HttpStatus} from '../util/uapi'
-import {SelfService} from "../middleware/authorization"
+import {SelfService} from '../middleware/authorization'
+import 'express'
+import {SessionPayload} from '../db/models/session'
+
+declare module 'express' {
+  export interface Request {
+    account?: SessionPayload
+  }
+}
 
 const DuplicateKeyErrorCode = 11000 // Mongo Duplicate Key Error Code
 

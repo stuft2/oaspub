@@ -4,10 +4,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "types": [
-      "./src/util/request.d.ts"
-    ]
+    "esModuleInterop": true
   },
   "include": [
     "src"
