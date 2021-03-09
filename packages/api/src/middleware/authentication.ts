@@ -40,11 +40,18 @@ export class Authentication {
     // Check security requirements
     try {
       const securityRequirements = req.operation.security
+
+      // If no security requirements are provided, the default role should be viewer
       if (!securityRequirements) {
         req.auth.roles.push('viewer')
         return next()
       }
+
+      // Process each of the security requirements
       const requirements = await Promise.all(securityRequirements.map(async requirement => {
+
+        // Each requirement may specify multiple authentication roles. The entity should be the same but that entity
+        // could have multiple roles, so we store the authenticated roles
         const authentications = await Promise.all(Object.entries(requirement).map(async ([role]) => {
           // TODO - Remove type conversion when OpenAPI enforcer provides types
           // Docs: https://github.com/byu-oit/openapi-enforcer/discussions/107
