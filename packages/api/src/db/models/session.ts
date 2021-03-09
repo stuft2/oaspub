@@ -40,7 +40,7 @@ export class Session {
     return {token}
   }
 
-  async verify(token: string): Promise<SessionPayload | null> {
+  verify(token: string): SessionPayload | null {
     return jwt.verify(token, this.secret, {
       issuer: this.options.issuer,
       maxAge: this.duration

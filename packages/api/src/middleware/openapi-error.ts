@@ -1,21 +1,15 @@
-import {Request, Response, NextFunction} from 'express'
+import {ErrorRequestHandler} from 'express'
 import debug from 'debug'
 import get from 'lodash.get'
 import {generateMetadataResponseObj, HttpStatus, ValidationError} from '../util/uapi'
 
 const logger = debug('api:server')
 
-interface EnforcerException extends Error {
-  exception: {
-    header: string
-  }
-}
-
-function isEnforcerValidationException (value: unknown): value is EnforcerException {
+function isEnforcerValidationException (value: unknown): boolean {
   return get(value, 'exception.header') === 'Request has one or more errors'
 }
 
-export function EnforcerError (err: Error, req: Request, res: Response, next: NextFunction): unknown {
+export const EnforcerError: ErrorRequestHandler = (err, req, res, next) => {
   if (isEnforcerValidationException(err)) {
     return res.status(HttpStatus.BAD_REQUEST).send(generateMetadataResponseObj(HttpStatus.BAD_REQUEST, undefined, err.message.split('\n')))
   }

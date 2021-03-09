@@ -2,7 +2,7 @@ import {Db} from 'mongodb'
 import {Debugger} from 'debug'
 import { v4 as uuid } from 'uuid'
 import * as crypto from 'crypto'
-import {SessionPayload} from "./session"
+import {Session, SessionPayload} from "./session"
 
 export interface AccountModel {
   _id: string
@@ -10,6 +10,7 @@ export interface AccountModel {
   email: string
   password: Password
   active: boolean
+  token?: string
 }
 
 export interface Password {

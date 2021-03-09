@@ -28,7 +28,7 @@ export function getResponseForReturnCode(code: number): string {
   return ''
 }
 
-export function generateValidationResponseObj(code: number, message?: string, validation?: string[] | null): UAPI.Metadata.Simple {
+export function generateValidationResponseObj(code: number, message?: string | null, validation?: string[] | null): UAPI.Metadata.Simple {
   if ([
     HttpStatus.SUCCESS,
     HttpStatus.CREATED,
@@ -48,7 +48,7 @@ export function generateValidationResponseObj(code: number, message?: string, va
   }
 }
 
-export function generateMetadataResponseObj(code: number, message?: string, validation?: string[] | null): { metadata: UAPI.Metadata.Simple } {
+export function generateMetadataResponseObj(code: number, message?: string | null, validation?: string[] | null): { metadata: UAPI.Metadata.Simple } {
   return {metadata: generateValidationResponseObj(code, message, validation)}
 }
 

@@ -88,14 +88,12 @@
       ],
       "get": {
         "summary": "get account information",
-        "description": "Returns nonsensitive account information such as names and email address",
+        "description": "Returns account information such as name and email address",
         "operationId": "getAccountInfo",
         "x-operation": "retrieve",
         "security": [
           {
-            "bearer": [
-
-            ]
+            "self": []
           }
         ],
         "tags": [
@@ -143,9 +141,8 @@
         "x-operation": "update",
         "security": [
           {
-            "bearer": [
-
-            ]
+            "self": [],
+            "owner": []
           }
         ],
         "tags": [
@@ -206,9 +203,7 @@
         "x-operation": "deactivate",
         "security": [
           {
-            "bearer": [
-
-            ]
+            "self": []
           }
         ],
         "tags": [
@@ -298,9 +293,7 @@
         "x-operation": "list",
         "security": [
           {
-            "bearer": [
-
-            ]
+            "owner": []
           }
         ],
         "tags": [
@@ -353,9 +346,7 @@
         "x-operation": "generate",
         "security": [
           {
-            "bearer": [
-
-            ]
+            "owner": []
           }
         ],
         "tags": [
@@ -430,9 +421,7 @@
         "x-operation": "revoke",
         "security": [
           {
-            "bearer": [
-
-            ]
+            "owner": []
           }
         ],
         "tags": [
@@ -511,9 +500,8 @@
         "x-operation": "publish",
         "security": [
           {
-            "bearer": [
-
-            ]
+            "owner": [],
+            "maintainer": []
           }
         ],
         "tags": [
@@ -735,13 +723,6 @@
         "description": "Lists the maintainers for a given document.",
         "operationId": "listDocumentMaintainers",
         "x-operation": "list",
-        "security": [
-          {
-            "bearer": [
-
-            ]
-          }
-        ],
         "tags": [
             "Documents"
         ],
@@ -796,9 +777,7 @@
         "x-operation": "invite",
         "security": [
           {
-            "bearer": [
-
-            ]
+            "owner": []
           }
         ],
         "tags": [
@@ -853,9 +832,7 @@
         "x-operation": "acknowledge",
         "security": [
           {
-            "bearer": [
-
-            ]
+            "self": []
           }
         ],
         "tags": [
@@ -921,9 +898,8 @@
         "x-operation": "remove",
         "security": [
           {
-            "bearer": [
-
-            ]
+            "self": [],
+            "owner": []
           }
         ],
         "tags": [
@@ -1046,6 +1022,9 @@
           "email": {
             "type": "string",
             "format": "email"
+          },
+          "token": {
+            "$ref": "#/components/schemas/session/properties/token"
           }
         }
       },
@@ -1129,7 +1108,7 @@
         "description": "there is not additional content to send"
       },
       "400": {
-        "description": "the request body was malformatted",
+        "description": "the request was mal-formatted",
         "content": {
           "application/json": {
             "schema": {
@@ -1190,11 +1169,29 @@
       }
     },
     "securitySchemes": {
-      "bearer": {
+      "self": {
         "type": "http",
-        "description": "browser authentication",
+        "description": "The username path parameter matches the username of the requester",
         "scheme": "bearer",
-        "bearerFormat": "bearer {token}"
+        "bearerFormat": "^[Bb]earer +([a-zA-Z0-9+\\/=._-]+)$"
+      },
+      "owner": {
+        "type": "http",
+        "description": "The requester is the resource owner",
+        "scheme": "bearer",
+        "bearerFormat": "^[Bb]earer +([a-zA-Z0-9+\\/=._-]+)$"
+      },
+      "maintainer": {
+        "type": "http",
+        "description": "The requester is a resource maintainer",
+        "scheme": "bearer",
+        "bearerFormat": "^[Bb]earer +([a-zA-Z0-9+\\/=._-]+)$"
+      },
+      "app": {
+        "type": "http",
+        "description": "Allows an application token to be used to authenticate the user. Authorization is determined by other listed securitySchemes.",
+        "scheme": "bearer",
+        "bearerFormat": "^([a-zA-Z0-9+\\/=._-]+)$"
       }
     },
     "parameters": {

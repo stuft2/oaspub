@@ -1,5 +1,5 @@
 import {EnvConfiguration} from '../util/env'
 import {Db} from 'mongodb'
-import {Middleware} from '../middleware/middleware'
+import {RequestHandler} from 'express'
 
-export type Controllers = (env: EnvConfiguration, db: Db) => Record<string, Middleware>
+export type Controllers = (env: EnvConfiguration, db: Db) => Record<string, RequestHandler>

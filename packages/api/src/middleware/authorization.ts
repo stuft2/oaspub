@@ -1,38 +1,75 @@
-import {Middleware} from './middleware'
 import {Db} from 'mongodb'
 import {generateMetadataResponseObj, HttpStatus} from '../util/uapi'
 import {EnvConfiguration} from '../util/env'
 import {Account} from '../db/models'
-import {Request} from 'express'
+import {Request, RequestHandler} from 'express'
 
-type SelfServicePredicate = (req: Request) => Promise<string | undefined>
+export type AuthorizationPredicate = (req: Request) => Promise<boolean>
 
-export class SelfService {
+export class Authorization {
   private readonly env: EnvConfiguration
   private readonly db: Db
   constructor(env: EnvConfiguration, db: Db) {
     this.env = env
     this.db = db
   }
-  middleware = (predicate: SelfServicePredicate): Middleware => {
-    return async (req, res, next) => {
-      if (!req.account) {
-        return res.status(HttpStatus.FORBIDDEN).send(generateMetadataResponseObj(HttpStatus.FORBIDDEN))
-      }
 
-      const result = await predicate(req)
-      if (result !== req.account.sub) {
-        return res.status(HttpStatus.FORBIDDEN).send(generateMetadataResponseObj(HttpStatus.FORBIDDEN))
+  middleware: RequestHandler = async (req, res, next) => {
+    const authorizations = await Promise.all(req.auth.roles.map(async role => {
+      const predicate = this.predicates[role]
+      if (predicate) {
+        return await predicate(req)
       }
+      return true
+    }))
 
-      return next()
+    const isAuthorized = authorizations.some(satisfied => satisfied)
+    if (!isAuthorized) {
+      return res.status(HttpStatus.FORBIDDEN).send(generateMetadataResponseObj(HttpStatus.FORBIDDEN))
     }
+
+    return next()
   }
 
-  // Verifies the username associated with an account request
-  account: SelfServicePredicate = async (req) => {
-    const {username} = req.params
+  // No authorization required
+  viewer: AuthorizationPredicate = async () => {
+    return true
+  }
+
+  // Verifies that the username path parameter is the same as the requester
+  self: AuthorizationPredicate = async (req) => {
+    // The authenticated entity is set in the authentication middleware
+    // See ./authentication.ts#middleware
+    if (!req.auth.entity) return false
+
+    // Get username and fetch account information
+    const username = req.params.username
     const account = await Account.fetch(this.db, {username}, null)
-    return account?.data.username
+
+    // Verify the account exists and the username matches the subject
+    return account?.data.username === req.auth.entity.sub
+  }
+
+  // Verifies the owner of the resource is the requester
+  owner: AuthorizationPredicate = async (req) => {
+    return true
+  }
+
+  // Verifies the maintainer of the resource is the requester
+  maintainer: AuthorizationPredicate = async (req) => {
+    return true
+  }
+
+  // Verifies the token
+  app: AuthorizationPredicate = async (req) => {
+    return true
+  }
+
+  predicates: Record<string, AuthorizationPredicate> = {
+    viewer: this.viewer,
+    self: this.self,
+    owner: this.owner,
+    maintainer: this.maintainer,
+    app: this.app
   }
 }
