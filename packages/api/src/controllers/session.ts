@@ -8,11 +8,13 @@ const controllers: Controllers = function ({server}, db) {
   return {
     async create (req, res) {
       const {username, email, password} = req.body
-      const account = await Account.fetch(db, username ? username : email)
+      const account = await Account.fetch(db, username ? {username} :{email}, null)
       if (!account || !account.verify(password)) {
-        return res.status(HttpStatus.FORBIDDEN).send(generateMetadataResponseObj(HttpStatus.FORBIDDEN, 'Invalid username or password'))
+        return res.status(HttpStatus.UNAUTHORIZED).send(generateMetadataResponseObj(HttpStatus.UNAUTHORIZED, 'Invalid username or password'))
       }
-      return res.send({
+      await Account.activate(db, account.data.username)
+      res.setHeader('location', `${server.host}/accounts/${account.data.username}`)
+      return res.status(HttpStatus.CREATED).send({
         ...generateMetadataResponseObj(HttpStatus.CREATED, 'Authenticated'),
         ...session.sign(account.claims())
       })

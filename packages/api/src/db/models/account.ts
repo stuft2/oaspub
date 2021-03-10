@@ -69,7 +69,7 @@ export class Account {
   }
 
   verify (password: string): boolean {
-    return Account.encryptPassword(password, this.data.password._salt).value === password
+    return Account.encryptPassword(password, this.data.password._salt).value === this.data.password.value
   }
 
   static encryptPassword (password: string, salt?: string): Password {
@@ -96,11 +96,15 @@ export class Account {
   }
 
   static async fetch (db: Db, filters: Partial<Pick<AccountModel, '_id' | 'username' | 'email'>>, active: boolean | null = true): Promise<Account | null> {
-    const result = await Account.collection(db).findOne({...filters, ...active !== null && { active}})
+    const result = await Account.collection(db).findOne({...filters, ...active !== null && { active }})
     return result ? new Account(result) : null
   }
 
   static async deactivate(db: Db, username: string): Promise<void> {
     await Account.collection(db).findOneAndUpdate({username}, { $set: { active: false } })
+  }
+
+  static async activate(db: Db, username: string): Promise<void> {
+    await Account.collection(db).findOneAndUpdate({username}, { $set: { active: true } })
   }
 }
