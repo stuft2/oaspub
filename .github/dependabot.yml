@@ -6,27 +6,15 @@ updates:
     directory: '/packages/api'
     schedule:
       interval: weekly
-      time: '00:00'
-      reviewers:
-        - stuft2
-      assignees:
-        - stuft2
-      commit-message:
-        prefix: fix
-        prefix-development: chore
-        include: scope
+    target-branch: main
+    reviewers:
+      - stuft2
 
   # Client NPM
   - package-ecosystem: npm
     directory: '/packages/client'
     schedule:
       interval: weekly
-      time: '00:00'
+    target-branch: main
     reviewers:
       - stuft2
-    assignees:
-      - stuft2
-    commit-message:
-      prefix: fix
-      prefix-development: chore
-      include: scope
