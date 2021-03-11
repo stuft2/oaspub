@@ -1,4 +1,5 @@
 import {UAPI} from '@byu-oit/uapi-ts'
+import {Query} from 'express-serve-static-core'
 import {ErrorObject} from 'ajv'
 
 export enum HttpStatus {
@@ -73,6 +74,16 @@ export class ValidationError extends Error {
     }, [] as string[])
     Object.setPrototypeOf(this, ValidationError.prototype);
   }
+}
+
+export function parseQueryToInt (query: Query[0], def = 0): number {
+  let result: number = def
+  if (Array.isArray(query)) {
+    query = query[0]
+  }
+  if (typeof query === 'string') result = parseInt(query)
+  if (typeof query === 'number') result = query
+  return result
 }
 
 

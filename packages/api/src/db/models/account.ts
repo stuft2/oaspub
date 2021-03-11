@@ -1,8 +1,8 @@
-import {Db} from 'mongodb'
+import {Collection, Db} from 'mongodb'
 import {Debugger} from 'debug'
 import { v4 as uuid } from 'uuid'
 import * as crypto from 'crypto'
-import {Session, SessionPayload} from "./session"
+import {SessionPayload} from './session'
 
 export interface AccountModel {
   _id: string
@@ -35,11 +35,15 @@ export class Account {
     this.data = account
   }
 
-  static collection (db: Db) {
+  static from (account: AccountModel): Account {
+    return Account.from(account)
+  }
+
+  static collection (db: Db): Collection<AccountModel> {
     return db.collection<AccountModel>(Account.name)
   }
 
-  static async initialize (db: Db, logger: Debugger) {
+  static async initialize (db: Db, logger: Debugger): Promise<void> {
     // Ensure collection exists
     const collectionName = Account.name
     const collections = await db.collections()
@@ -82,7 +86,7 @@ export class Account {
     const _id = uuid()
     const password = Account.encryptPassword(pwd)
     const {ops: [result]} = await Account.collection(db).insertOne({...account, password, _id, active: true})
-    return new Account(result)
+    return Account.from(result)
   }
 
   static async update(db: Db, username: string, {password, ...fields}: AccountUpdateRequest): Promise<Account | null> {
@@ -92,12 +96,12 @@ export class Account {
       updates = {...updates, ...encrypted}
     }
     const result = await Account.collection(db).findOneAndUpdate({username, active: true}, { $set: updates }, {returnOriginal: false})
-    return result.value ? new Account(result.value) : null
+    return result.value ? Account.from(result.value) : null
   }
 
   static async fetch (db: Db, filters: Partial<Pick<AccountModel, '_id' | 'username' | 'email'>>, active: boolean | null = true): Promise<Account | null> {
     const result = await Account.collection(db).findOne({...filters, ...active !== null && { active }})
-    return result ? new Account(result) : null
+    return result ? Account.from(result) : null
   }
 
   static async deactivate(db: Db, username: string): Promise<void> {

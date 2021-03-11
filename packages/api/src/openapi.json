@@ -296,6 +296,14 @@
             "owner": []
           }
         ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offset"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          }
+        ],
         "tags": [
             "Access Tokens"
         ],
@@ -935,7 +943,7 @@
           {
             "type": "object",
             "properties": {
-              "collection_size": {
+              "collectionSize": {
                 "type": "number"
               },
               "limit": {
@@ -1050,17 +1058,8 @@
             "writeOnly": true
           },
           "lastUsed": {
-            "type": "object",
-            "readOnly": true,
-            "properties": {
-              "location": {
-                "type": "string"
-              },
-              "datetime": {
-                "type": "string",
-                "format": "date-time"
-              }
-            }
+            "type": "number",
+            "readOnly": true
           }
         }
       },
@@ -1195,6 +1194,22 @@
       }
     },
     "parameters": {
+      "offset": {
+        "name": "offset",
+        "description": "The collection offset",
+        "in": "query",
+        "schema": {
+          "type": "number"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "description": "The collection offset",
+        "in": "query",
+        "schema": {
+          "type": "number"
+        }
+      },
       "username": {
         "name": "username",
         "description": "The username of the account",
