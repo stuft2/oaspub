@@ -64,12 +64,15 @@ export class Account {
   }
 
   info (): Omit<AccountModel, '_id' | '_salt' | 'password' | 'active'> {
-    const {_id, password, active, ...readable} = this.data
-    return readable
+    return {
+      username: this.data.username,
+      email: this.data.email,
+      ...this.data.token && {token: this.data.token}
+    }
   }
 
   claims (): Omit<SessionPayload, 'iss' | 'iat' | 'exp'> {
-    return { sub: this.data.username }
+    return { sub: this.data.username, email: this.data.email }
   }
 
   verify (password: string): boolean {

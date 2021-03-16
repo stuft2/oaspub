@@ -2,8 +2,11 @@ import {ValidateFunction} from 'ajv'
 import {OpenAPIV2, OpenAPIV3} from 'openapi-types'
 import {ajv} from '../../util/ajv'
 import {ValidationError} from '../../util/uapi'
-import {Db} from 'mongodb'
+import {Collection, Db} from 'mongodb'
 import {Debugger} from 'debug'
+import { Contributor, Role } from './contributor'
+
+export type DocumentModel = OpenAPIV2.Document | OpenAPIV3.Document
 
 export class DocumentV3 {
   static validate: ValidateFunction
@@ -19,7 +22,7 @@ export class DocumentV3 {
     return DocumentV3
   }
 
-  static async fromJson (obj: unknown) {
+  static async fromJson (obj: unknown): Promise<DocumentV3> {
     if (!DocumentV3.isDocumentV2(obj)) throw new ValidationError(DocumentV3.validate.errors?.slice()) // copy errors
     return new DocumentV3(obj)
   }
@@ -43,7 +46,7 @@ export class DocumentV2 {
     return DocumentV2
   }
 
-  static async fromJson (obj: unknown) {
+  static async fromJson (obj: unknown): Promise<DocumentV2> {
     if (!DocumentV2.isDocumentV2(obj)) throw new ValidationError(DocumentV2.validate.errors?.slice()) // Copy errors
     return new DocumentV2(obj)
   }
@@ -54,9 +57,24 @@ export class DocumentV2 {
 }
 
 export class Document {
+  readonly data: DocumentModel
+
+  constructor(model: DocumentModel) {
+    this.data = model
+  }
+
   static v3 = DocumentV3
   static v2 = DocumentV2
-  static async initialize (db: Db, logger: Debugger) {
+
+  static from (model: DocumentModel): Document {
+    return new Document(model)
+  }
+
+  static collection (db: Db): Collection<DocumentModel> {
+    return db.collection<DocumentModel>(Document.name)
+  }
+
+  static async initialize (db: Db, logger: Debugger): Promise<void> {
     // Ensure collection exists
     const collectionName = Document.name
     const collections = await db.collections()
@@ -73,5 +91,32 @@ export class Document {
       { key: { 'info.version': 1, 'info.title': 1 }, unique: true },
     ])
     logger('Created indexes for collection %s', collectionName)
+  }
+
+  info (): DocumentModel['info'] {
+    return this.data.info
+  }
+
+  static async count (db: Db, query: Pick<DocumentModel['info'], 'title'>): Promise<number> {
+    return await Document.collection(db).countDocuments(query)
+  }
+
+  static async list (db: Db, query: Pick<DocumentModel['info'], 'title'>, limit: number, offset?: number): Promise<Document[]> {
+    const versions = await Document.collection(db).find(query, {
+      sort: { 'info.version': 1 },
+      skip: offset,
+      limit
+    }).toArray()
+    return  versions.map(version => Document.from(version))
+  }
+
+  static async fetch (db: Db, filters: Pick<DocumentModel['info'], 'version' | 'title'>): Promise<Document | null> {
+    const result = await Document.collection(db).findOne(filters)
+    return result ? Document.from(result) : null
+  }
+
+  static async publish (db: Db, request: DocumentModel): Promise<Document> {
+    const {ops: [result]} = await Document.collection(db).insertOne(request)
+    return Document.from(result)
   }
 }

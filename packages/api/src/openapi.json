@@ -1187,10 +1187,8 @@
         "bearerFormat": "^[Bb]earer +([a-zA-Z0-9+\\/=._-]+)$"
       },
       "app": {
-        "type": "http",
-        "description": "Allows an application token to be used to authenticate the user. Authorization is determined by other listed securitySchemes.",
-        "scheme": "bearer",
-        "bearerFormat": "^([a-zA-Z0-9+\\/=._-]+)$"
+        "type": "basic",
+        "description": "Allows an application token to be used to authenticate the user. Authorization is determined by other listed securitySchemes."
       }
     },
     "parameters": {
@@ -1220,7 +1218,7 @@
         }
       },
       "tokenId": {
-        "name": "tokenId",
+        "name": "id",
         "description": "The unique identifier for an access token",
         "in": "path",
         "required": true,
@@ -1229,7 +1227,7 @@
         }
       },
       "documentId": {
-        "name": "documentId",
+        "name": "id",
         "description": "The name of an OpenAPI document",
         "in": "path",
         "required": true,

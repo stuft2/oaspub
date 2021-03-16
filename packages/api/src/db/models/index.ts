@@ -1,3 +1,5 @@
 export * from './account'
 export * from './document'
 export * from './token'
+export * from './contributor'
+export * from './session'

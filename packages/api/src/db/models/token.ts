@@ -1,12 +1,15 @@
 import {Collection, Db} from 'mongodb'
 import {Debugger} from 'debug'
 import {v4 as uuid} from 'uuid'
+import { Account } from './account'
 
 export interface TokenModel {
   _id: string
   username: string
   description: string
   lastUsed: number // Linux epoch time
+  issuedAt: number // Linux epoch time
+  expiration: number // Linux epoch time
   token?: string
 }
 
@@ -67,13 +70,26 @@ export class Token {
     const _id = uuid()
     const token = uuid()
     const lastUsed = Date.now()
+    const issuedAt = Date.now()
+    const expiration = -1
     const {ops: [result]} = await Token.collection(db).insertOne({
       ...request,
       _id,
       token,
-      lastUsed
+      lastUsed,
+      issuedAt,
+      expiration
     })
     return Token.from(result)
+  }
+  
+  static async fetch (db: Db, filter: Pick<TokenModel, 'username' | '_id'>): Promise<Token | null> {
+    const result = await Token.collection(db).findOne(filter)
+    return result ? Token.from(result) : null
+  }
+
+  async identity (db: Db) {
+    return await Account.fetch(db, {username: this.data.username}, true)
   }
 
   static async revoke (db: Db, filter: Pick<TokenModel, 'username' | '_id'>): Promise<void> {

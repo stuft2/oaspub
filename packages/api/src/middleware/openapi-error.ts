@@ -9,7 +9,7 @@ function isEnforcerValidationException (value: unknown): boolean {
   return get(value, 'exception.header') === 'Request has one or more errors'
 }
 
-export const EnforcerError: ErrorRequestHandler = (err, req, res, next) => {
+export const EnforcerError: ErrorRequestHandler = (err, req, res) => {
   if (isEnforcerValidationException(err)) {
     return res.status(HttpStatus.BAD_REQUEST).send(generateMetadataResponseObj(HttpStatus.BAD_REQUEST, undefined, err.message.split('\n')))
   }

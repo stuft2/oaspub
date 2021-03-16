@@ -14,7 +14,8 @@ export type SessionPayload = {
   iss: string,
   exp: number,
   iat: number,
-  sub: string
+  sub: string,
+  email: string
 }
 
 export type SessionResponse = {

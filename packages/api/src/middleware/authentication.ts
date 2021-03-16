@@ -7,7 +7,7 @@ import {TokenExpiredError} from 'jsonwebtoken'
 import {OpenAPIV3} from 'openapi-types'
 import SecuritySchemeObject = OpenAPIV3.SecuritySchemeObject
 import HttpSecurityScheme = OpenAPIV3.HttpSecurityScheme
-import {Account} from "../db/models"
+import {Account, Token} from "../db/models"
 import {Db} from "mongodb"
 
 export interface RequestAuthentication {
@@ -77,6 +77,7 @@ export class Authentication {
       if (!authenticated) {
         return res.status(HttpStatus.UNAUTHORIZED).send(generateMetadataResponseObj(HttpStatus.UNAUTHORIZED))
       }
+      // The entity is authenticated, continue to next middleware
       return next()
     } catch (e) {
       if (e instanceof TokenExpiredError) {
@@ -135,7 +136,7 @@ export class HttpSecuritySchemes {
   }
 
   bearer: HttpSecuritySchemeHandler = async (req, role, {scheme, bearerFormat}) => {
-    // Verify bearer scheme since no other http auth scheme is supported
+    // Verify bearer scheme
     if (scheme !== 'bearer') {
       logger('Scheme of http security scheme must be "bearer"')
       return false
@@ -155,6 +156,7 @@ export class HttpSecuritySchemes {
     // First match will be the match of the entire authorization header, second will be the token
     const [, token] = authorization.match(new RegExp(bearerFormat || defaultBearerRx)) || []
     if (!token) {
+      logger('Malformatted authorization header')
       return false
     }
 
@@ -174,7 +176,63 @@ export class HttpSecuritySchemes {
     return !!verified && !!active
   }
 
+  basic: HttpSecuritySchemeHandler = async (req, role, {scheme}) => {
+    // Verify basic scheme
+    if (scheme !== 'basic') {
+      logger('Scheme of http security scheme must be "basic"')
+      return false
+    }
+
+    // The authorization header must be defined if the route specifies an HTTP security scheme
+    const { authorization } = req.headers
+    if (!authorization) {
+      logger('No authorization header found')
+      return false
+    }
+
+    // First match will be the match of the entire authorization header, second will be the encoded token
+    const basicRx = /^[Bb]asic +([a-zA-Z0-9+/=._-]+)$/
+    const [, encoded] = authorization.match(new RegExp(basicRx)) || []
+    if (!encoded) {
+      logger('Malformatted authorization header')
+      return false
+    }
+
+    // Token should be base64 encoded
+    const decoded = Buffer.from(encoded, 'base64').toString()
+    const [, username, password] = decoded.match(/^(\w+):(\d{12,})$/) || []
+    if (!username || !password) {
+      logger('Authorization header missing username or app token')
+      return false
+    }
+
+    // Resolve token
+    const token = await Token.fetch(this.db, {username, _id: password})
+    if (!token) {
+      logger('No token found')
+      return false
+    }
+
+    // Resolve identity
+    const account = await token.identity(this.db)
+    if (!account) {
+      logger('Token is valid but the account associated with it is inactive or could not be found')
+      return false
+    }
+
+    req.auth.entity = {
+      iss: this.env.server.host,
+      iat: token.data.issuedAt,
+      exp: token.data.expiration,
+      sub: account.data.username,
+      email: account.data.email
+    }
+    req.auth.roles.push('app')
+    return true
+  }
+
   handlers: Record<string, HttpSecuritySchemeHandler> = {
-    bearer: this.bearer
+    bearer: this.bearer,
+    basic: this.basic
   }
 }
