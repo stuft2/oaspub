@@ -101,6 +101,11 @@ export class Document {
     return await Document.collection(db).countDocuments(query)
   }
 
+  static async search (db: Db, query: string, limit: number, offset?: number): Promise<Document[]> {
+    // TODO - implement search
+    return []
+  }
+
   static async list (db: Db, query: Pick<DocumentModel['info'], 'title'>, limit: number, offset?: number): Promise<Document[]> {
     const versions = await Document.collection(db).find(query, {
       sort: { 'info.version': 1 },

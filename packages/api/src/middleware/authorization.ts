@@ -33,9 +33,9 @@ export class Authorization {
   }
 
   // No authorization required
-  viewer: AuthorizationPredicate = async () => {
-    // Check if the path requires authorization
-    return false
+  viewer: AuthorizationPredicate = async (req) => {
+    // Check if the operation requires authorization
+    return req.operation.security != null && req.operation.security.length > 0
   }
 
   // Verifies that the username path parameter is the same as the requester
