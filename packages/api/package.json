@@ -14,8 +14,7 @@
     "lint": "eslint . --ext .ts,.tsx",
     "lint:staged": "lint-staged",
     "start": "node dist/index.js",
-    "test": "newman run --env-var \"host=localhost:8080\" ./test/integration/accounts.postman_collection.json",
-    "prepare": "([ -z $CI ] && husky install) || exit 0"
+    "test": "newman run --env-var \"host=localhost:8080\" ./test/integration/accounts.postman_collection.json"
   },
   "repository": {
     "type": "git",
@@ -68,7 +67,7 @@
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "lint-staged": "^10.5.3",
-    "newman": "^5.2.2",
+    "newman": "^5.1.2",
     "openapi-types": "^7.2.3",
     "prettier": "^2.2.1",
     "source-map-support": "^0.5.19",
