@@ -42,7 +42,7 @@
     "got": "^11.8.1",
     "jsonwebtoken": "^8.5.1",
     "lodash.get": "^4.4.2",
-    "mongodb": "^3.6.4",
+    "mongodb": "^3.6.5",
     "morgan": "^1.10.0",
     "openapi-enforcer": "^1.14.0",
     "openapi-enforcer-middleware": "^1.2.4",
